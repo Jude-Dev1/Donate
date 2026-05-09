@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Cafe.jude</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<style>
+:root{
+  --c:#00f5ff;--p:#b44fff;--gold:#ffd700;
+  --navy:#050a12;--n2:#080f1e;--n3:#0c1628;--n4:#101e34;
+  --txt:#ddeeff;--soft:#8aaabb;--muted:#3d5570;
+  --card:rgba(8,15,30,0.88);--glass:rgba(0,245,255,0.06);--gb:rgba(0,245,255,0.12);
+  --rad:16px;--radlg:24px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --navy:#f0f4ff;--n2:#e8eeff;--n3:#dde4ff;--n4:#cfd8ff;
+  --txt:#06112a;--soft:#2d4070;--muted:#7090c0;
+  --card:rgba(255,255,255,0.90);--glass:rgba(80,60,200,0.06);--gb:rgba(80,60,200,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--navy);color:var(--txt);
+  min-height:100vh;overflow-x:hidden;
+  transition:background .4s,color .4s;
+}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--c),var(--p));border-radius:3px}
+::selection{background:rgba(0,245,255,0.2);color:var(--c)}
+
+/* ── BG ── */
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px)}
+.orb1{width:500px;height:500px;top:-150px;left:-150px;background:radial-gradient(var(--c),transparent 70%);opacity:.09;animation:floatO 12s ease-in-out infinite alternate}
+.orb2{width:450px;height:450px;bottom:-100px;right:-100px;background:radial-gradient(var(--p),transparent 70%);opacity:.09;animation:floatO 15s ease-in-out infinite alternate-reverse}
+.orb3{width:300px;height:300px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(#0051ff,transparent 70%);opacity:.05;animation:floatO 9s ease-in-out infinite alternate}
+@keyframes floatO{from{transform:translate(0,0)}to{transform:translate(40px,30px)}}
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,245,255,0.025)1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025)1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black,transparent);
+}
+[data-theme="light"] .grid-bg{background-image:linear-gradient(rgba(80,60,200,0.04)1px,transparent 1px),linear-gradient(90deg,rgba(80,60,200,0.04)1px,transparent 1px)}
+
+/* ── TOP BAR ── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:60px;padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,10,18,0.75);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border-bottom:1px solid rgba(0,245,255,0.07);
+  transition:background .4s;
+}
+[data-theme="light"] #topbar{background:rgba(240,244,255,0.82);border-bottom-color:rgba(80,60,200,0.10)}
+.tb-logo{
+  font-size:1.4rem;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(90deg,var(--c),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-btn{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(0,245,255,0.14);
+  background:var(--glass);color:var(--txt);
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem;
+  cursor:pointer;transition:all .2s;
+}
+.tb-btn:hover,.tb-btn:active{border-color:var(--c);box-shadow:0 0 14px rgba(0,245,255,0.25)}
+
+/* ── MAIN WRAPPER ── */
+.caffe-inner{
+  position:relative;z-index:1;
+  max-width:480px;margin:0 auto;
+  padding:72px 16px 40px;
+  display:flex;flex-direction:column;gap:0;
+}
+
+/* ── STEPS ── */
+.cf-step{display:none}
+.cf-step.cf-active{display:block;animation:pgIn .38s cubic-bezier(.16,1,.3,1) both}
+@keyframes pgIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── BUTTONS ── */
+.cf-cta-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--c),var(--p));
+  color:#050a12;font-family:'Poppins',sans-serif;
+  font-size:0.9rem;font-weight:800;letter-spacing:0.3px;
+  cursor:pointer;transition:transform .2s,box-shadow .2s,opacity .2s;
+  box-shadow:0 6px 28px rgba(0,245,255,0.28);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.cf-cta-btn:active{transform:scale(0.97)}
+.cf-cta-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ── AUTH CARD ── */
+.cf-auth-card{
+  background:var(--card);border:1px solid rgba(0,245,255,0.10);
+  border-radius:var(--radlg);padding:24px 20px;
+  backdrop-filter:blur(28px);margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.cf-auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--c),var(--p))}
+.cf-auth-logo{font-size:2rem;text-align:center;margin-bottom:12px}
+.cf-auth-title{font-size:1.15rem;font-weight:800;text-align:center;margin-bottom:6px;letter-spacing:-0.5px}
+.cf-auth-sub{font-size:0.75rem;color:var(--soft);text-align:center;margin-bottom:20px;line-height:1.6}
+
+/* ── FIELDS ── */
+.cf-field{position:relative;margin-bottom:12px}
+.cf-field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--c);font-size:0.8rem;pointer-events:none}
+.cf-input{
+  width:100%;padding:13px 14px 13px 38px;
+  background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.14);
+  border-radius:12px;color:var(--txt);font-family:'Poppins',sans-serif;
+  font-size:0.85rem;font-weight:500;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.cf-input:focus{border-color:rgba(0,245,255,0.5);box-shadow:0 0 0 3px rgba(0,245,255,0.08)}
+.cf-input::placeholder{color:var(--muted);font-weight:400}
+.cf-input.cf-valid{border-color:rgba(57,255,154,0.5)}
+.cf-input.cf-invalid{border-color:rgba(255,80,80,0.5)}
+.cf-hint{font-size:0.68rem;margin-top:4px;margin-bottom:8px;padding-left:4px;min-height:16px}
+.cf-hint.ok{color:#39ff9a}
+.cf-hint.err{color:#ff6b6b}
+
+/* ── URL PREVIEW ── */
+.cf-url-preview{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.1);
+  border-radius:10px;padding:9px 12px;margin-bottom:14px;
+  font-size:0.74rem;
+}
+.cf-url-base{color:var(--muted)}
+.cf-url-slug{color:var(--c);font-weight:700}
+.cf-url-slug.valid{color:#39ff9a}
+.cf-url-slug.invalid{color:#ff6b6b}
+
+/* ── CHECKBOXES ── */
+.cf-checks{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.cf-check-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:4px 0}
+.cf-check-box{
+  width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;
+  border:1.5px solid rgba(0,245,255,0.3);
+  background:rgba(0,245,255,0.04);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.cf-check-box.checked{
+  background:linear-gradient(135deg,var(--c),var(--p));
+  border-color:transparent;
+  box-shadow:0 0 10px rgba(0,245,255,0.3);
+}
+.cf-check-box.checked::after{content:'✓';font-size:0.65rem;color:#050a12;font-weight:800}
+.cf-check-label{font-size:0.72rem;color:var(--soft);line-height:1.5}
+.cf-check-label a{color:var(--c);text-decoration:underline;text-underline-offset:2px}
+
+/* ── AVATAR UPLOAD ── */
+.cf-avatar-upload{
+  width:90px;height:90px;border-radius:50%;
+  border:2px dashed rgba(0,245,255,0.3);
+  cursor:pointer;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s;
+  margin:0 auto;
+}
+.cf-avatar-upload:hover{border-color:var(--c)}
+.cf-avatar-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+
+/* ── BACK LINK ── */
+.cf-back-link{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.72rem;color:var(--muted);cursor:pointer;
+  margin-bottom:18px;width:fit-content;
+  transition:color .2s;
+}
+.cf-back-link:hover{color:var(--c)}
+
+/* ── CAFFE HERO ── */
+.caffe-hero{text-align:center;padding:28px 16px 20px;position:relative}
+.caffe-hero::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,245,255,0.07) 0%,rgba(180,79,255,0.05) 50%,transparent 70%);
+  pointer-events:none;
+}
+.caffe-orbit-wrap{width:110px;height:110px;position:relative;margin:0 auto 18px}
+.caffe-ring{
+  position:absolute;inset:-5px;border-radius:50%;
+  border:2px solid transparent;
+  background:linear-gradient(var(--n2),var(--n2)) padding-box,
+    conic-gradient(from 0deg,var(--c),var(--p),#3355ff,var(--c)) border-box;
+  animation:spinA 3.5s linear infinite;
+}
+.caffe-ring2{position:absolute;inset:-12px;border-radius:50%;border:1px dashed rgba(180,79,255,0.25);animation:spinA 9s linear infinite reverse}
+.caffe-ring3{position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(0,245,255,0.08);animation:spinA 18s linear infinite}
+.caffe-avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,245,255,0.25);position:relative;z-index:2;display:block;box-shadow:0 0 28px rgba(0,245,255,0.2),0 0 60px rgba(180,79,255,0.12)}
+@keyframes spinA{to{transform:rotate(360deg)}}
+.caffe-name{font-size:1.45rem;font-weight:900;letter-spacing:-0.8px;margin-bottom:5px;background:linear-gradient(130deg,#fff 0%,var(--c) 55%,var(--p) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .caffe-name{background:linear-gradient(130deg,#0a1535,#0055cc,#7722cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.caffe-tagline{font-size:0.78rem;color:var(--soft);line-height:1.7;max-width:280px;margin:0 auto 6px}
+.caffe-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.22);border-radius:50px;padding:5px 14px;font-size:0.6rem;font-weight:700;color:var(--c);letter-spacing:1.5px;text-transform:uppercase;margin-top:10px}
+.cf-owner-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(180,79,255,0.1));
+  border:1px solid rgba(255,215,0,0.35);
+  border-radius:50px;padding:4px 12px;
+  font-size:0.58rem;font-weight:800;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--gold);margin-top:6px;
+}
+
+/* ── USER BAR ── */
+.cf-user-bar{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.12);
+  border-radius:14px;padding:10px 14px;margin-bottom:16px;
+}
+.cf-user-bar-av{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(0,245,255,0.25);flex-shrink:0}
+.cf-user-bar-av-wrap{width:34px;height:34px;flex-shrink:0;position:relative}
+.cf-user-bar-av-init{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c),var(--p));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:800;color:#050a12;
+}
+.cf-user-bar-info{flex:1;min-width:0}
+.cf-user-bar-name{font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cf-user-bar-url{font-size:0.64rem;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cf-user-bar-logout{font-size:0.65rem;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid rgba(0,245,255,0.1);transition:all .2s;white-space:nowrap;flex-shrink:0}
+.cf-user-bar-logout:hover{color:var(--c);border-color:rgba(0,245,255,0.25)}
+
+/* ── DONATION CARD ── */
+.caffe-card{
+  background:var(--card);border:1px solid rgba(0,245,255,0.10);
+  border-radius:var(--radlg);padding:22px 18px;margin-bottom:14px;
+  backdrop-filter:blur(28px);position:relative;overflow:hidden;
+}
+.caffe-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--c),var(--p))}
+.caffe-sec-label{font-size:0.62rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--c);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.caffe-sec-label::before{content:'';width:14px;height:1px;background:var(--c)}
+
+/* Preset buttons */
+.caffe-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+.caffe-amt{position:relative;padding:14px 8px;border-radius:14px;border:1px solid rgba(0,245,255,0.14);background:rgba(0,245,255,0.04);backdrop-filter:blur(12px);text-align:center;cursor:pointer;transition:all .22s cubic-bezier(.16,1,.3,1);overflow:hidden}
+.caffe-amt::before{content:'';position:absolute;inset:0;border-radius:14px;background:linear-gradient(135deg,rgba(0,245,255,0.12),rgba(180,79,255,0.1));opacity:0;transition:opacity .22s}
+.caffe-amt.selected,.caffe-amt:active{border-color:var(--c);box-shadow:0 0 18px rgba(0,245,255,0.22),inset 0 0 12px rgba(0,245,255,0.05);transform:scale(0.97)}
+.caffe-amt.selected::before{opacity:1}
+.caffe-amt-cup{font-size:1.4rem;display:block;margin-bottom:4px;line-height:1}
+.caffe-amt-val{font-size:1.05rem;font-weight:800;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.caffe-amt-lbl{font-size:0.6rem;color:var(--muted);margin-top:2px}
+
+/* Custom amount input */
+.caffe-input-wrap{position:relative;margin-bottom:13px}
+.caffe-input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--c);font-size:0.85rem;pointer-events:none}
+.caffe-input{width:100%;padding:13px 14px 13px 38px;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.14);border-radius:12px;color:var(--txt);font-family:'Poppins',sans-serif;font-size:0.85rem;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s}
+.caffe-input:focus{border-color:rgba(0,245,255,0.5);box-shadow:0 0 0 3px rgba(0,245,255,0.08)}
+.caffe-input::placeholder{color:var(--muted);font-weight:400}
+
+/* Message textarea */
+.caffe-textarea{width:100%;padding:13px 14px;min-height:80px;resize:vertical;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.14);border-radius:12px;color:var(--txt);font-family:'Poppins',sans-serif;font-size:0.82rem;outline:none;transition:border-color .2s,box-shadow .2s;line-height:1.6;margin-bottom:16px}
+.caffe-textarea:focus{border-color:rgba(0,245,255,0.5);box-shadow:0 0 0 3px rgba(0,245,255,0.08)}
+.caffe-textarea::placeholder{color:var(--muted)}
+
+/* Generate QR button */
+.caffe-gen-btn{width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;font-family:'Poppins',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:0.3px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 28px rgba(0,245,255,0.3);display:flex;align-items:center;justify-content:center;gap:10px}
+.caffe-gen-btn:active{transform:scale(0.97);box-shadow:0 3px 14px rgba(0,245,255,0.2)}
+.caffe-gen-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+/* ── QR Modal overlay ── */
+#caffeQrOverlay{display:none;position:fixed;inset:0;z-index:800;background:rgba(5,10,18,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#caffeQrOverlay.show{display:flex}
+.caffe-qr-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;padding:20px 18px 28px;text-align:center;position:relative;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both;max-height:92vh;overflow-y:auto}
+@keyframes sheetUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.qr-sheet-bar{width:40px;height:4px;border-radius:4px;background:rgba(0,245,255,0.2);margin:0 auto 22px}
+.qr-sheet-title{font-size:1.1rem;font-weight:800;margin-bottom:4px;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.qr-sheet-sub{font-size:0.75rem;color:var(--soft);margin-bottom:20px;line-height:1.6}
+.qr-img-wrap{width:220px;height:220px;margin:0 auto 20px;border-radius:20px;overflow:hidden;border:2px solid rgba(0,245,255,0.2);box-shadow:0 0 40px rgba(0,245,255,0.15),0 0 80px rgba(180,79,255,0.08);background:#fff;display:flex;align-items:center;justify-content:center}
+.qr-img-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.qr-amount-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.25);border-radius:50px;padding:6px 16px;font-size:0.78rem;font-weight:700;color:var(--c);margin-bottom:18px}
+.qr-aba-row{display:flex;align-items:center;gap:10px;background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.14);border-radius:12px;padding:12px 14px;margin-bottom:16px}
+.qr-aba-num{flex:1;font-size:0.88rem;font-weight:700;color:var(--txt);text-align:left;letter-spacing:1px}
+.qr-copy-btn{flex-shrink:0;padding:8px 16px;border:none;border-radius:9px;background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;transition:transform .15s;display:flex;align-items:center;gap:5px}
+.qr-copy-btn:active{transform:scale(0.95)}
+.qr-close-btn{width:100%;padding:13px;border:1px solid rgba(0,245,255,0.18);border-radius:12px;background:transparent;color:var(--txt);font-family:'Poppins',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.qr-close-btn:active{border-color:var(--c);background:rgba(0,245,255,0.05)}
+
+/* ── Note card ── */
+.caffe-note{background:rgba(180,79,255,0.06);border:1px solid rgba(180,79,255,0.15);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.caffe-note i{color:var(--p);font-size:1rem;margin-top:2px;flex-shrink:0}
+.caffe-note p{font-size:0.74rem;color:var(--soft);line-height:1.7}
+
+/* ── Copy toast ── */
+#caffeToast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);z-index:900;background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;font-weight:700;font-size:0.78rem;padding:10px 22px;border-radius:50px;box-shadow:0 6px 24px rgba(0,245,255,0.4);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;display:flex;align-items:center;gap:7px}
+#caffeToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Wall of Fame ── */
+.wof-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;margin-top:4px}
+.wof-title{font-size:0.64rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--p);display:flex;align-items:center;gap:8px}
+.wof-title::before{content:'';width:14px;height:1px;background:var(--p)}
+.wof-count{font-size:0.65rem;color:var(--muted);background:rgba(180,79,255,0.08);border:1px solid rgba(180,79,255,0.15);border-radius:50px;padding:3px 10px;font-weight:600}
+.wof-feed{display:flex;flex-direction:column;gap:10px}
+.wof-card{background:var(--card);border:1px solid rgba(180,79,255,0.1);border-radius:var(--rad);padding:14px;display:flex;gap:12px;align-items:flex-start;backdrop-filter:blur(20px);cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.wof-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--p),var(--c));opacity:0;transition:opacity .25s}
+.wof-card:hover,.wof-card:active{border-color:rgba(180,79,255,0.28);transform:translateX(3px)}
+.wof-card:hover::before,.wof-card:active::before{opacity:1}
+.wof-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(0,245,255,0.2);box-shadow:0 0 10px rgba(0,245,255,0.1)}
+.wof-avatar-placeholder{width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(180,79,255,0.15));border:1.5px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--c)}
+.wof-body{flex:1;min-width:0}
+.wof-meta{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
+.wof-username{font-size:0.8rem;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wof-amt-badge{font-size:0.6rem;font-weight:700;background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(180,79,255,0.15));border:1px solid rgba(0,245,255,0.2);border-radius:50px;padding:2px 8px;color:var(--c);white-space:nowrap;flex-shrink:0}
+.wof-url{font-size:0.62rem;color:var(--muted);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wof-msg{font-size:0.76rem;color:var(--soft);line-height:1.6;word-break:break-word}
+.wof-time{font-size:0.6rem;color:var(--muted);margin-top:5px}
+/* ── VERIFIED BADGE (scallop style) ── */
+@keyframes badgePulse{
+  0%,100%{filter:drop-shadow(0 0 3px #2244ff) drop-shadow(0 0 6px #4466ff);transform:scale(1)}
+  50%{filter:drop-shadow(0 0 7px #3355ff) drop-shadow(0 0 14px #6688ff) drop-shadow(0 0 20px rgba(50,100,255,0.5));transform:scale(1.13)}
+}
+@keyframes badgeShine{
+  0%{opacity:0;transform:translateX(-100%) rotate(25deg)}
+  18%{opacity:0.55}
+  36%{opacity:0;transform:translateX(120%) rotate(25deg)}
+  100%{opacity:0;transform:translateX(120%) rotate(25deg)}
+}
+.wof-verified{
+  width:18px;height:18px;flex-shrink:0;position:relative;
+  display:inline-flex;align-items:center;justify-content:center;
+  animation:badgePulse 2.4s ease-in-out infinite;
+}
+.wof-verified svg{width:18px;height:18px;display:block}
+.wof-verified::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.55) 50%,transparent 70%);
+  animation:badgeShine 3s ease-in-out infinite;
+  pointer-events:none;overflow:hidden;
+}
+
+/* Skeleton */
+.wof-skeleton{display:flex;flex-direction:column;gap:10px}
+.wof-sk-card{background:var(--card);border:1px solid rgba(0,245,255,0.06);border-radius:var(--rad);padding:14px;display:flex;gap:12px}
+.sk-circle{width:42px;height:42px;border-radius:50%;background:linear-gradient(90deg,rgba(0,245,255,0.05),rgba(180,79,255,0.05),rgba(0,245,255,0.05));background-size:200%;animation:skShimmer 1.5s infinite;flex-shrink:0}
+.sk-lines{flex:1;display:flex;flex-direction:column;gap:7px;justify-content:center}
+.sk-line{height:9px;border-radius:5px;background:linear-gradient(90deg,rgba(0,245,255,0.05),rgba(180,79,255,0.05),rgba(0,245,255,0.05));background-size:200%;animation:skShimmer 1.5s infinite}
+.sk-line.w60{width:60%}.sk-line.w80{width:80%}.sk-line.w40{width:40%}
+@keyframes skShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Empty state */
+.wof-empty{text-align:center;padding:32px 16px;background:var(--card);border:1px dashed rgba(0,245,255,0.1);border-radius:var(--rad)}
+.wof-empty-icon{font-size:2.4rem;margin-bottom:10px}
+.wof-empty h4{font-size:0.9rem;font-weight:700;margin-bottom:5px}
+.wof-empty p{font-size:0.74rem;color:var(--muted);line-height:1.6}
+
+/* Profile modal */
+#cfProfileModal{display:none;position:fixed;inset:0;z-index:810;background:rgba(5,10,18,0.88);backdrop-filter:blur(14px);align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfProfileModal.show{display:flex}
+.cf-profile-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;padding:24px 20px 36px;text-align:center;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both}
+.cf-ps-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;border:2px solid rgba(0,245,255,0.25);box-shadow:0 0 24px rgba(0,245,255,0.18)}
+.cf-ps-av-init{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--p));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#050a12;margin:0 auto 12px}
+.cf-ps-name{font-size:1.05rem;font-weight:800;margin-bottom:3px}
+.cf-ps-url{font-size:0.72rem;color:var(--c);margin-bottom:12px}
+.cf-ps-verified{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(30,50,255,0.10);border:1px solid rgba(80,120,255,0.3);
+  border-radius:50px;padding:6px 16px;
+  font-size:0.65rem;font-weight:700;color:#99aaff;margin-bottom:16px;
+}
+.cf-ps-verified .vbadge-icon{
+  width:18px;height:18px;flex-shrink:0;
+  animation:badgePulse 2.4s ease-in-out infinite;
+  display:inline-flex;
+}
+.cf-ps-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.cf-ps-stat{background:var(--card);border:1px solid rgba(0,245,255,0.08);border-radius:12px;padding:14px}
+.cf-ps-stat-num{font-size:1.3rem;font-weight:800;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.cf-ps-stat-lbl{font-size:0.6rem;color:var(--muted)}
+.cf-ps-close{width:100%;padding:13px;border:1px solid rgba(0,245,255,0.18);border-radius:12px;background:transparent;color:var(--txt);font-family:'Poppins',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:border-color .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.cf-ps-close:active{border-color:var(--c)}
+
+/* Edit Profile Modal */
+#cfEditModal{display:none;position:fixed;inset:0;z-index:820;background:rgba(5,10,18,0.88);backdrop-filter:blur(14px);align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfEditModal.show{display:flex}
+.cf-edit-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both}
+.cf-edit-title{font-size:1.05rem;font-weight:800;margin-bottom:16px;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.cf-edit-av-wrap{text-align:center;margin-bottom:16px}
+
+/* Admin reply styles */
+.wof-reply{margin-top:8px;background:linear-gradient(135deg,rgba(0,245,255,0.06),rgba(180,79,255,0.06));border:1px solid rgba(0,245,255,0.15);border-radius:10px;padding:9px 11px;display:flex;gap:8px;align-items:flex-start}
+.wof-reply-av{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--c),var(--p));display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-weight:800;color:#050a12}
+.wof-reply-body{flex:1}
+.wof-reply-name{font-size:0.62rem;font-weight:800;color:var(--c);margin-bottom:2px;display:flex;align-items:center;gap:5px}
+.wof-reply-badge{font-size:0.48rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;border:1px solid rgba(0,245,255,0.3);border-radius:4px;padding:1px 5px}
+.wof-reply-text{font-size:0.72rem;color:var(--soft);line-height:1.5}
+.wof-reply-btn{font-size:0.6rem;color:var(--muted);cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+.wof-reply-btn:hover{color:var(--c)}
+.wof-reply-input-wrap{margin-top:8px;display:none;flex-direction:column;gap:6px}
+.wof-reply-input-wrap.open{display:flex}
+.wof-reply-input{width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.18);color:var(--txt);font-family:'Poppins',sans-serif;font-size:0.75rem;outline:none;resize:none;min-height:60px}
+.wof-reply-input:focus{border-color:rgba(0,245,255,0.45)}
+.wof-reply-send{align-self:flex-end;padding:7px 16px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+
+/* Live dot */
+.cf-live-dot{display:inline-flex;align-items:center;gap:5px;font-size:0.6rem;color:var(--muted)}
+.cf-live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:#39ff9a;box-shadow:0 0 6px #39ff9a;animation:livePulse 2s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Cup SVG */
+.cf-cup-wrap{display:inline-flex;align-items:center;justify-content:center;position:relative}
+@keyframes steamPuff{0%{transform:translateY(0) scaleX(1);opacity:.7}50%{transform:translateY(-8px) scaleX(1.3);opacity:.4}100%{transform:translateY(-16px) scaleX(.8);opacity:0}}
+@keyframes cupFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.cf-cup-svg{animation:cupFloat 3s ease-in-out infinite}
+.cf-steam-1{animation:steamPuff 2s ease-out infinite}
+.cf-steam-2{animation:steamPuff 2s ease-out infinite .6s}
+.cf-steam-3{animation:steamPuff 2s ease-out infinite 1.2s}
+.caffe-amt .cf-cup-wrap{margin-bottom:4px}
+.caffe-amt .cf-cup-svg{width:34px;height:34px}
+.cf-cup-lg .cf-cup-svg{width:52px;height:52px}
+.cf-cup-sm .cf-cup-svg{width:20px;height:20px;animation:none}
+.wof-amt-badge .cf-cup-wrap{display:inline-flex;vertical-align:middle}
+.wof-amt-badge .cf-cup-svg{width:14px;height:14px;animation:none}
+
+/* ── BACK-TO-HOME BTN ── */
+.cf-home-btn{display:inline-flex;align-items:center;gap:7px;font-size:0.72rem;color:var(--muted);cursor:pointer;margin-bottom:14px;width:fit-content;padding:7px 14px;border-radius:10px;border:1px solid rgba(0,245,255,0.12);transition:all .2s;background:transparent;font-family:'Poppins',sans-serif;font-weight:600}
+.cf-home-btn:hover{color:var(--c);border-color:rgba(0,245,255,0.32);background:rgba(0,245,255,0.04)}
+/* ── DONATE WOF SECTION ── */
+#cfDonateWofSection.cf-hidden{display:none!important}
+/* ── COOLDOWN NOTICE ── */
+.cf-cooldown-msg{background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.22);border-radius:10px;padding:10px 14px;font-size:0.72rem;color:#ffb347;display:flex;align-items:center;gap:8px;margin-bottom:14px;line-height:1.5}
+/* ── PW CHANGE SEPARATOR ── */
+.cf-edit-sep{border-top:1px solid rgba(0,245,255,0.08);margin:18px 0 14px}
+.cf-edit-sec-lbl{font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--p);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+/* ── LANDING LOGGED-IN BAR ── */
+#cfLandingUserBar{display:none;align-items:center;gap:10px;background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.14);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+#cfLandingUserBar.show{display:flex}
+.cf-lub-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--p));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:#050a12;flex-shrink:0;overflow:hidden}
+.cf-lub-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.cf-lub-info{flex:1;min-width:0}
+.cf-lub-name{font-size:0.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cf-lub-sub{font-size:0.62rem;color:var(--c)}
+.cf-lub-go{font-size:0.65rem;color:var(--c);cursor:pointer;padding:7px 13px;border-radius:8px;border:1px solid rgba(0,245,255,0.25);transition:all .2s;white-space:nowrap;flex-shrink:0;background:transparent;font-family:'Poppins',sans-serif;font-weight:700}
+.cf-lub-go:hover{background:rgba(0,245,255,0.08)}
+
+/* ══ ENHANCED WOF CARDS ══ */
+.wof-card{border-radius:18px;padding:16px;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,border-color .25s}
+.wof-card:hover,.wof-card:active{
+  transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(0,0,0,.32);
+  border-color:rgba(0,245,255,.28)}
+.wof-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--wt-c,var(--c));border-radius:18px 0 0 18px;
+  opacity:.75;transition:opacity .2s}
+.wof-card:hover::before{opacity:1}
+/* message bubble */
+.wof-msg-bubble{
+  background:rgba(255,255,255,.033);
+  border:1px solid rgba(255,255,255,.06);
+  border-left:2.5px solid var(--wt-c,var(--c));
+  border-radius:0 10px 10px 0;
+  padding:9px 12px;margin-top:8px;
+  font-size:0.77rem;line-height:1.7;color:var(--soft);word-break:break-word}
+[data-theme="light"] .wof-msg-bubble{background:rgba(0,0,0,.03)}
+/* admin tools row */
+.wof-admin-row{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
+.wof-reply-btn{font-size:0.6rem;color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+.wof-reply-btn:hover{color:var(--c)}
+.wof-del-btn{font-size:0.6rem;color:rgba(255,80,80,.55);cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;transition:color .2s}
+.wof-del-btn:hover{color:#ff6b6b}
+/* eye toggle */
+.pw-eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  cursor:pointer;color:var(--muted);padding:4px;
+  display:flex;align-items:center;background:none;border:none;transition:color .2s}
+.pw-eye-btn:hover{color:var(--c)}
+/* amount badge */
+.wof-amt-badge{display:inline-flex;align-items:center;gap:5px;
+  font-size:0.62rem;font-weight:700;border-radius:50px;padding:3px 10px;
+  white-space:nowrap;flex-shrink:0;
+  border:1px solid var(--wt-c,var(--c));
+  color:var(--wt-c,var(--c));background:transparent}
+
+
+
+/* ── SETTINGS COOLDOWN STATES ── */
+.cf-set-item.cf-disabled{opacity:0.45;cursor:not-allowed;pointer-events:none}
+.cf-set-item.cf-disabled:hover{border-color:rgba(0,245,255,0.08);background:var(--card)}
+.cf-set-cd-timer{font-size:0.62rem;color:var(--p);font-weight:600;
+  padding:6px 12px;margin:-4px 0 8px 48px;
+  background:rgba(180,79,255,0.06);border:1px solid rgba(180,79,255,0.12);
+  border-radius:8px;display:none;align-items:center;gap:6px;
+  font-variant-numeric:tabular-nums}
+.cf-set-cd-timer.show{display:flex}
+.cf-set-cd-timer i{font-size:0.6rem}
+
+
+/* ── CHANGE PASSWORD MODAL ── */
+#cfPwModal{display:none;position:fixed;inset:0;z-index:825;background:rgba(5,10,18,0.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfPwModal.show{display:flex}
+.cf-pw-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);
+  border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;
+  padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both}
+
+/* ── SETTINGS PANEL ── */
+#cfSettingsModal{display:none;position:fixed;inset:0;z-index:830;background:rgba(5,10,18,0.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfSettingsModal.show{display:flex}
+.cf-settings-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);
+  border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;
+  padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both;
+  max-height:85vh;overflow-y:auto}
+.cf-settings-title{font-size:1.1rem;font-weight:800;text-align:center;margin-bottom:18px;
+  background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cf-set-item{display:flex;align-items:center;gap:12px;padding:14px;
+  background:var(--card);border:1px solid rgba(0,245,255,0.08);border-radius:14px;
+  margin-bottom:8px;cursor:pointer;transition:all .2s}
+.cf-set-item:hover{border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.04)}
+.cf-set-item:active{transform:scale(0.98)}
+.cf-set-icon{width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.cf-set-icon.blue{background:rgba(0,245,255,0.1);color:var(--c)}
+.cf-set-icon.purple{background:rgba(180,79,255,0.1);color:var(--p)}
+.cf-set-icon.gold{background:rgba(255,215,0,0.1);color:var(--gold)}
+.cf-set-icon.red{background:rgba(255,80,80,0.1);color:#ff6b6b}
+.cf-set-label{flex:1;font-size:0.82rem;font-weight:600}
+.cf-set-arrow{color:var(--muted);font-size:0.7rem}
+.cf-set-divider{height:1px;background:rgba(0,245,255,0.06);margin:12px 0}
+/* ── WELCOME BAR ── */
+.cf-welcome-bar{text-align:center;padding:8px 0 14px;animation:pgIn .5s ease both}
+.cf-welcome-text{font-size:0.78rem;color:var(--soft);font-weight:500}
+.cf-welcome-name{font-weight:800;background:linear-gradient(90deg,var(--c),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+/* ── USER BAR clickable name ── */
+.cf-user-bar-name{cursor:pointer;transition:color .2s}
+.cf-user-bar-name:hover{color:var(--c)}
+/* ── COFFEE ICON BADGE (replace $) ── */
+.wof-coffee-icon{display:inline-flex;vertical-align:middle;margin-right:2px;opacity:.85}
+
+
+
+/* ── LEGAL SWIPE HANDLE ── */
+.cf-legal-sheet .qr-sheet-bar{cursor:grab;touch-action:none;padding:8px 0;margin-bottom:14px}
+.cf-legal-sheet .qr-sheet-bar:active{cursor:grabbing}
+/* ── LEGAL MODALS (TOS / PRIVACY) ── */
+.cf-legal-overlay{display:none;position:fixed;inset:0;z-index:850;background:rgba(5,10,18,0.90);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+.cf-legal-overlay.show{display:flex}
+.cf-legal-sheet{cursor:default;width:100%;max-width:480px;background:var(--n2);
+  border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;
+  padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both;
+  max-height:80vh;overflow-y:auto}
+.cf-legal-sheet::-webkit-scrollbar{width:3px}
+.cf-legal-sheet::-webkit-scrollbar-thumb{background:linear-gradient(var(--c),var(--p));border-radius:3px}
+.cf-legal-title{font-size:1.05rem;font-weight:800;text-align:center;margin-bottom:16px;
+  background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cf-legal-body{font-size:0.76rem;color:var(--soft);line-height:1.85}
+.cf-legal-body h3{font-size:0.82rem;font-weight:700;color:var(--txt);margin:16px 0 6px;
+  display:flex;align-items:center;gap:6px}
+.cf-legal-body h3 i{color:var(--c);font-size:0.72rem}
+.cf-legal-body p{margin-bottom:10px}
+.cf-legal-body ul{margin:0 0 12px 18px;list-style:none}
+.cf-legal-body ul li{position:relative;padding-left:14px;margin-bottom:4px}
+.cf-legal-body ul li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:50%;background:var(--c);opacity:.5}
+.cf-legal-body strong{color:var(--txt);font-weight:600}
+/* ── FOOTER ── */
+.cf-footer{text-align:center;padding:28px 16px 20px;margin-top:20px;
+  border-top:1px solid rgba(0,245,255,0.06);position:relative}
+.cf-footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:60px;height:1px;background:linear-gradient(90deg,var(--c),var(--p))}
+.cf-footer-text{font-size:0.62rem;color:var(--muted);letter-spacing:0.5px}
+.cf-footer-text a{color:var(--soft);transition:color .2s;text-decoration:none}
+.cf-footer-text a:hover{color:var(--c)}
+.cf-footer-links{display:flex;justify-content:center;gap:16px;margin-bottom:8px}
+.cf-footer-links a{font-size:0.6rem;color:var(--muted);transition:color .2s;text-decoration:none;
+  display:flex;align-items:center;gap:4px}
+.cf-footer-links a:hover{color:var(--c)}
+/* ── LEGAL LINK STYLE (in checkboxes) ── */
+.cf-check-label a{color:var(--c);text-decoration:underline;text-underline-offset:2px;
+  cursor:pointer;transition:color .2s}
+.cf-check-label a:hover{color:var(--p)}
+
+
+/* ── SHOP ── */
+#cfShopModal{display:none;position:fixed;inset:0;z-index:840;background:rgba(5,10,18,0.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfShopModal.show{display:flex}
+.cf-shop-sheet{cursor:default;width:100%;max-width:460px;background:var(--n2);border:1px solid rgba(0,245,255,0.14);border-radius:28px 28px 0 0;padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both;max-height:85vh;overflow-y:auto}
+.cf-shop-title{font-size:1.1rem;font-weight:800;text-align:center;margin-bottom:4px;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cf-shop-sub{font-size:0.68rem;color:var(--muted);text-align:center;margin-bottom:18px}
+.cf-coins-bar{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,165,0,0.06));border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:10px 16px;margin-bottom:18px}
+.cf-coins-icon{font-size:1rem;color:var(--gold)}
+.cf-coins-amount{font-size:1.1rem;font-weight:800;color:var(--gold)}
+.cf-coins-label{font-size:0.62rem;color:var(--muted)}
+.cf-style-card{background:var(--card);border:1px solid rgba(0,245,255,0.08);border-radius:18px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;transition:all .25s}
+.cf-style-card:hover{border-color:rgba(0,245,255,0.2)}
+.cf-style-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.cf-style-1::before{background:linear-gradient(90deg,#00f5ff,#39ff9a)}
+.cf-style-2::before{background:linear-gradient(90deg,#b44fff,#ff6b9d,#ffd700)}
+.cf-style-3::before{background:linear-gradient(90deg,#ffd700,#ff6b35,#b44fff,#00f5ff);background-size:200%;animation:shimmerBar 2s linear infinite}
+@keyframes shimmerBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.cf-style-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cf-style-name{font-size:0.85rem;font-weight:800}
+.cf-style-price{display:flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;color:var(--gold)}
+.cf-style-preview{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(0,0,0,0.15);border-radius:12px;margin-bottom:12px}
+.cf-style-preview-name{font-size:0.88rem;font-weight:700}
+.cf-name-s1{color:var(--c);text-shadow:0 0 8px rgba(0,245,255,0.4)}
+.cf-name-s2{background:linear-gradient(90deg,#b44fff,#ff6b9d,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 3s ease infinite}
+@keyframes gradShift{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+.cf-name-s3{background:linear-gradient(90deg,#ffd700,#ff6b35,#b44fff,#00f5ff,#ffd700);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:premiumShift 3s linear infinite;filter:drop-shadow(0 0 6px rgba(255,215,0,0.4))}
+@keyframes premiumShift{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.cf-style-desc{font-size:0.7rem;color:var(--soft);line-height:1.6;margin-bottom:12px}
+.cf-style-buy-btn{width:100%;padding:11px;border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.cf-style-buy-btn:active{transform:scale(0.97)}
+.cf-style-buy-btn.primary{background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;box-shadow:0 4px 16px rgba(0,245,255,0.25)}
+.cf-style-buy-btn.owned{background:rgba(57,255,154,0.1);border:1px solid rgba(57,255,154,0.3);color:#39ff9a;cursor:default}
+.cf-style-buy-btn.locked{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--muted);cursor:not-allowed;opacity:.6}
+.cf-shop-admin{background:var(--card);border:1px solid rgba(0,245,255,0.08);border-radius:18px;padding:16px;margin-top:6px;text-align:center}
+.cf-shop-admin-title{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--p);margin-bottom:12px}
+.cf-shop-admin-av{width:48px;height:48px;border-radius:50%;object-fit:cover;margin:0 auto 8px;border:2px solid rgba(255,215,0,0.3);display:block}
+.cf-shop-admin-name{font-size:0.85rem;font-weight:800;margin-bottom:2px}
+.cf-shop-admin-badge{display:inline-flex;align-items:center;gap:4px;font-size:0.55rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cf-shop-tg-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#0088cc,#00aaee);color:#fff;font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;box-shadow:0 4px 16px rgba(0,136,204,0.3)}
+.cf-shop-tg-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,136,204,0.4)}
+.cf-shop-tg-btn:active{transform:scale(0.97)}
+.cf-coins-mini{display:inline-flex;align-items:center;gap:4px;font-size:0.62rem;font-weight:700;color:var(--gold);background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.18);border-radius:50px;padding:3px 10px;margin-left:6px}
+
+
+/* ── ADMIN GIFT COINS PANEL ── */
+#cfGiftModal{display:none;position:fixed;inset:0;z-index:835;background:rgba(5,10,18,0.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom);cursor:pointer}
+#cfGiftModal.show{display:flex}
+.cf-gift-sheet{cursor:default;width:100%;max-width:440px;background:var(--n2);
+  border:1px solid rgba(255,215,0,0.14);border-radius:28px 28px 0 0;
+  padding:24px 20px 36px;animation:sheetUp .42s cubic-bezier(.16,1,.3,1) both;position:relative;overflow:hidden}
+.cf-gift-sheet::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),#ff6b35,var(--gold));background-size:200%;animation:shimmerBar 2s linear infinite}
+.cf-gift-title{font-size:1.05rem;font-weight:800;text-align:center;margin-bottom:16px;
+  background:linear-gradient(90deg,var(--gold),#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cf-gift-result{padding:12px;border-radius:12px;margin-bottom:14px;font-size:0.75rem;
+  display:none;align-items:center;gap:8px;line-height:1.5}
+.cf-gift-result.ok{display:flex;background:rgba(57,255,154,0.08);border:1px solid rgba(57,255,154,0.2);color:#39ff9a}
+.cf-gift-result.err{display:flex;background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);color:#ff6b6b}
+
+
+/* ── MEMBER BADGE (cafe.jude membership) ── */
+.cf-member-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,107,53,0.10));
+  border:1px solid rgba(255,215,0,0.30);
+  border-radius:50px;padding:5px 14px;
+  font-size:0.6rem;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--gold);
+  animation:memberGlow 2.5s ease-in-out infinite;
+}
+@keyframes memberGlow{
+  0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.15)}
+  50%{box-shadow:0 0 18px rgba(255,215,0,0.3),0 0 30px rgba(255,107,53,0.12)}
+}
+.cf-member-badge .cf-mbadge-check{
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#ff6b35);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.5rem;color:#050a12;font-weight:900;flex-shrink:0;
+  box-shadow:0 0 6px rgba(255,215,0,0.4);
+}
+/* mini badge for WoF cards */
+.cf-member-mini{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:0.5rem;font-weight:700;letter-spacing:0.5px;
+  color:var(--gold);background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.2);
+  border-radius:50px;padding:1px 7px;white-space:nowrap;flex-shrink:0;
+}
+.cf-member-mini .cf-mm-check{
+  width:10px;height:10px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#ff6b35);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.4rem;color:#050a12;font-weight:900;
+}
+/* Gift label in shop */
+.cf-member-gift-label{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(180,79,255,0.06));
+  border:1px solid rgba(255,215,0,0.22);
+  border-radius:10px;padding:10px 14px;margin-bottom:12px;
+  font-size:0.72rem;font-weight:700;color:var(--gold);
+  letter-spacing:0.3px;
+}
+.cf-member-gift-label i{color:var(--gold);font-size:0.85rem}
+
+/* ── STYLED NAME (universal) ── */
+.cf-styled-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cf-sn-sm{font-size:0.72rem}
+.cf-sn-lg{font-size:1.05rem}
+/* Ensure name styles work on spans/divs too (not just .wof-username) */
+.cf-styled-name.cf-name-s1{color:var(--c);text-shadow:0 0 8px rgba(0,245,255,0.4)}
+.cf-styled-name.cf-name-s2{background:linear-gradient(90deg,#b44fff,#ff6b9d,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 3s ease infinite}
+.cf-styled-name.cf-name-s3{background:linear-gradient(90deg,#ffd700,#ff6b35,#b44fff,#00f5ff,#ffd700);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:premiumShift 3s linear infinite;filter:drop-shadow(0 0 6px rgba(255,215,0,0.4))}
+
+/* ── QR Red Glow Border ── */
+.qr-img-wrap{
+  border:3px solid rgba(255,60,60,0.7) !important;
+  box-shadow:0 0 16px rgba(255,60,60,0.25),0 0 32px rgba(255,60,60,0.10);
+  animation:qrRedGlow 2.8s ease-in-out infinite;
+  will-change:box-shadow,border-color}
+@keyframes qrRedGlow{
+  0%,100%{border-color:rgba(255,60,60,0.55);box-shadow:0 0 12px rgba(255,60,60,0.18),0 0 26px rgba(255,60,60,0.08)}
+  50%   {border-color:rgba(255,80,80,0.90);box-shadow:0 0 22px rgba(255,60,60,0.38),0 0 45px rgba(255,60,60,0.16)}
+}
+/* Floating cafe icon */
+@keyframes cfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.qr-cafe-float{display:inline-block;animation:cfloat 2s ease-in-out infinite;
+  font-size:1.1rem;margin-right:4px}
+/* Rainbow shimmer text (lightweight) */
+.qr-rb{background:linear-gradient(90deg,#ff3333,#ff9900,#ffee00,#33ff66,#00ccff,#5533ff,#cc00ff,#ff3333);
+  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:qrRbText 3s linear infinite;font-weight:700;
+  will-change:background-position}
+@keyframes qrRbText{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+
+/* ── Animated steam cup ── */
+.qr-cup-wrap{display:inline-flex;align-items:flex-end;gap:1px;
+  vertical-align:middle;margin-right:6px;position:relative}
+.qr-cup-icon{font-size:1rem;line-height:1;color:var(--c)}
+.qr-steam{position:absolute;top:-13px;left:50%;transform:translateX(-60%);
+  display:flex;gap:4px;pointer-events:none}
+.qr-steam span{width:2.5px;border-radius:3px;
+  background:linear-gradient(to top,rgba(0,245,255,0.7),transparent);
+  animation:steamRise 1.6s ease-in-out infinite;
+  transform-origin:bottom center}
+.qr-steam span:nth-child(1){height:9px;animation-delay:0s}
+.qr-steam span:nth-child(2){height:7px;animation-delay:0.35s}
+.qr-steam span:nth-child(3){height:10px;animation-delay:0.7s}
+@keyframes steamRise{
+  0%  {opacity:0;transform:translateY(0) scaleX(1)}
+  20% {opacity:.7}
+  70% {opacity:.3;transform:translateY(-9px) scaleX(0.6) rotate(-5deg)}
+  100%{opacity:0;transform:translateY(-13px) scaleX(0.3)}
+}
+
+/* ── QR Message box with red border + fog ── */
+.qr-msg-box{position:relative;overflow:hidden;
+  background:rgba(14,6,6,0.55);
+  border:1px solid rgba(220,50,50,0.28);
+  border-radius:12px;padding:12px 14px;margin-bottom:14px;text-align:left;
+  box-shadow:0 0 12px rgba(200,40,40,0.08),inset 0 0 20px rgba(200,40,40,0.04);
+  animation:msgBorderPulse 3.5s ease-in-out infinite}
+@keyframes msgBorderPulse{
+  0%,100%{border-color:rgba(220,50,50,0.22);box-shadow:0 0 10px rgba(200,40,40,0.06),inset 0 0 18px rgba(200,40,40,0.03)}
+  50%{border-color:rgba(220,50,50,0.42);box-shadow:0 0 18px rgba(200,40,40,0.14),inset 0 0 26px rgba(200,40,40,0.07)}
+}
+/* Fog shimmer layer */
+.qr-msg-box::before{content:'';position:absolute;inset:0;border-radius:12px;
+  background:linear-gradient(120deg,transparent 20%,rgba(200,40,40,0.04) 45%,rgba(255,80,80,0.06) 50%,rgba(200,40,40,0.04) 55%,transparent 80%);
+  background-size:250% 100%;
+  animation:fogShimmer 4s ease-in-out infinite;pointer-events:none;z-index:0}
+@keyframes fogShimmer{0%,100%{background-position:150% 0;opacity:.4}50%{background-position:-50% 0;opacity:.8}}
+.qr-msg-box > div{position:relative;z-index:1}
+
+/* ── Success Screen (premium reply card) ── */
+#qrSuccessScreen{display:none;animation:pgIn .38s cubic-bezier(.16,1,.3,1) both;padding:6px 0}
+#qrSuccessScreen.show{display:block}
+/* Reply card */
+.qr-reply-card{background:linear-gradient(135deg,rgba(0,245,255,0.04),rgba(57,255,154,0.03));
+  border:1px solid rgba(57,255,154,0.2);border-radius:18px;
+  padding:22px 18px 18px;margin-bottom:18px;position:relative;overflow:hidden;text-align:left}
+.qr-reply-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#39ff9a,var(--c),#39ff9a);background-size:200%;
+  animation:shimmerBar 2.5s linear infinite}
+.qr-reply-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.qr-reply-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c),var(--p));
+  display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:#050a12}
+.qr-reply-sender{font-size:0.7rem;font-weight:800;color:var(--c)}
+.qr-reply-badge{font-size:0.5rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  border:1px solid rgba(0,245,255,0.25);border-radius:4px;padding:1px 5px;display:block;width:fit-content;margin-top:1px}
+.qr-reply-msg{font-size:0.75rem;color:var(--soft);line-height:1.75}
+.qr-reply-msg strong{color:var(--c)}
+.qr-reply-amount{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  background:rgba(57,255,154,0.08);border:1px solid rgba(57,255,154,0.2);
+  border-radius:50px;padding:5px 14px;font-size:0.75rem;font-weight:700;color:#39ff9a}
+.qr-reply-ts{font-size:0.6rem;color:var(--muted);margin-top:8px}
+/* Check pop */
+.qr-check-pop{display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#39ff9a,#00c875);
+  flex-shrink:0;animation:checkPop .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes checkPop{from{transform:scale(0)}to{transform:scale(1)}}
+.qr-check-pop svg{width:12px;height:12px}
+.qr-back-btn{width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--c),var(--p));color:#050a12;
+  font-family:'Poppins',sans-serif;font-size:0.88rem;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform .2s;box-shadow:0 5px 20px rgba(0,245,255,0.22)}
+.qr-back-btn:active{transform:scale(0.97)}
+
+/* ── Scan to Pay subtle decorations ── */
+.qr-deco{position:absolute;pointer-events:none;z-index:3;line-height:1}
+.qr-deco-tl{top:18px;left:18px;font-size:0.7rem;color:var(--c);
+  animation:decoTwinkle 2s ease-in-out infinite}
+.qr-deco-br{bottom:22px;right:18px;font-size:0.6rem;color:var(--p);
+  animation:decoTwinkle 2.5s ease-in-out infinite 0.8s}
+.qr-deco-sl{position:absolute;top:24px;left:50%;margin-left:-60px;
+  font-size:0.68rem;color:var(--gold);
+  animation:decoSpin 4s linear infinite}
+.qr-deco-sr{position:absolute;top:24px;left:50%;margin-left:42px;
+  font-size:0.6rem;color:var(--gold);
+  animation:decoSpin 5s linear infinite reverse}
+.qr-deco-heart{position:absolute;top:20px;left:50%;margin-left:-8px;
+  font-size:0.65rem;color:#ff6b9d;
+  animation:decoHeart 1.8s ease-in-out infinite}
+@keyframes decoTwinkle{
+  0%,100%{opacity:.2;transform:scale(.7)}
+  50%{opacity:.85;transform:scale(1.15)}}
+@keyframes decoSpin{
+  0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes decoHeart{
+  0%,100%{transform:scale(1);opacity:.5}
+  50%{transform:scale(1.35);opacity:.9}}
+
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-orbs">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+</div>
+<div class="grid-bg"></div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-logo">Cafe</div>
+  <div class="tb-right">
+    <button class="tb-btn" id="themeBtn" aria-label="Theme"><i class="fa-solid fa-moon"></i></button>
+    <button class="tb-btn" id="shopBtn" aria-label="Shop" style="color:var(--gold)"><i class="fa-solid fa-store"></i></button>
+  </div>
+</div>
+
+<!-- CAFFE PAGE ONLY -->
+<div class="caffe-inner">
+
+  <!-- ══ STEP 0: LANDING ══ -->
+  <div class="cf-step cf-active" id="cf-step-landing">
+    <div class="caffe-hero">
+      <div class="caffe-orbit-wrap">
+        <div class="caffe-ring3"></div><div class="caffe-ring2"></div><div class="caffe-ring"></div>
+        <img class="caffe-avatar" src="https://i.postimg.cc/qqkPKYjW/file-0000000023c87209a82b615a648485e1.png" alt="Cafe. Jude">
+      </div>
+      <div class="caffe-name">Cafe. Jude</div>
+      <p class="caffe-tagline">it's jude some of you may already know me while others might not i specialize in account bypass verification code and building telegram shop bots along with logo design if you’d like to support what i do you can buy me a cofe every bit of support helps me grow and improve.</p>
+      <div class="caffe-badge"><i class="fa-solid fa-mug-hot"></i> Support My Work</div>
+    </div>
+    <!-- LOGGED-IN LANDING BAR -->
+    <div id="cfLandingUserBar">
+      <div class="cf-lub-av" id="cfLubAv"></div>
+      <div class="cf-lub-info">
+        <div class="cf-lub-name" id="cfLubName">—</div>
+        <div class="cf-lub-sub">Logged in</div>
+      </div>
+      <button class="cf-lub-go" id="cfLandingGoBtn"><i class="fa-solid fa-arrow-right"></i> My Page</button>
+    </div>
+    <div class="cf-auth-card">
+      <div class="cf-auth-logo"><i class="fa-solid fa-mug-hot" style="color:var(--c)"></i></div>
+      <div class="cf-auth-title">Buyme.cafe</div>
+      <div class="cf-auth-sub">Create your personal account instantly on Buyme.cafe forget about emails! just pick a name set a password and you're good to go.</div>
+      <button class="cf-cta-btn" id="createPageBtn" style="margin-bottom:12px">
+        <i class="fa-solid fa-user-plus"></i> Get Started
+      </button>
+      <button class="cf-cta-btn" id="loginPageBtn"
+        style="background:transparent;border:1px solid rgba(0,245,255,0.25);color:var(--txt);box-shadow:none">
+        <i class="fa-solid fa-right-to-bracket"></i> I already have a page
+      </button>
+    </div>
+    <!-- Wall of Fame -->
+    <div class="wof-header">
+      <div class="wof-title"><i class="fa-solid fa-star" style="color:var(--p)"></i> The Cafe List <span class="cf-live-dot">Live</span></div>
+      <div class="wof-count" id="wofCount">0 supporter</div>
+    </div>
+    <div class="wof-feed" id="wofFeed">
+      <div class="wof-skeleton" id="wofSkeleton">
+        <div class="wof-sk-card"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line w80"></div><div class="sk-line w60"></div><div class="sk-line w40"></div></div></div>
+        <div class="wof-sk-card"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line w60"></div><div class="sk-line w80"></div><div class="sk-line w40"></div></div></div>
+        <div class="wof-sk-card"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line w80"></div><div class="sk-line w40"></div><div class="sk-line w60"></div></div></div>
+      </div>
+    </div>
+  </div><!-- /cf-step-landing -->
+
+  <!-- ══ STEP: LOGIN ══ -->
+  <div class="cf-step" id="cf-step-login">
+    <div style="margin-top:24px">
+      <div class="cf-back-link" id="loginBackBtn">
+        <i class="fa-solid fa-arrow-left"></i> Back
+      </div>
+    </div>
+    <div class="cf-auth-card">
+      <div class="cf-auth-logo"><i class="fa-solid fa-right-to-bracket" style="color:var(--c)"></i></div>
+      <div class="cf-auth-title">Welcome back!</div>
+      <div class="cf-auth-sub">Enter your username and password</div>
+      <div class="cf-field">
+        <i class="fa-solid fa-at cf-field-icon"></i>
+        <input type="text" class="cf-input" id="cfLoginUsernameInput" placeholder="Username" maxlength="20" autocomplete="username">
+      </div>
+      <div class="cf-field" style="margin-top:10px;position:relative">
+        <i class="fa-solid fa-lock cf-field-icon"></i>
+        <input type="password" class="cf-input" id="cfLoginPasswordInput" placeholder="Password" maxlength="64" autocomplete="current-password" style="padding-right:44px">
+        <span onclick="cfTogglePw('cfLoginPasswordInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      </div>
+      <div class="cf-hint" id="cfLoginHint"></div>
+      <button class="cf-cta-btn" id="cfLoginSubmitBtn">
+        <i class="fa-solid fa-arrow-right"></i> Login
+      </button>
+    </div>
+  </div><!-- /cf-step-login -->
+
+  <!-- ══ STEP 1: CREATE PAGE ══ -->
+  <div class="cf-step" id="cf-step-username">
+    <div style="margin-top:24px">
+      <div class="cf-back-link" id="createBackBtn">
+        <i class="fa-solid fa-arrow-left"></i> Back
+      </div>
+    </div>
+    <div class="cf-auth-card">
+      <div class="cf-auth-logo"><i class="fa-solid fa-user-pen" style="color:var(--p)"></i></div>
+      <div class="cf-auth-title">Create your page</div>
+      <div class="cf-auth-sub">Choose a username and upload your profile photo</div>
+      <div style="text-align:center;margin-bottom:18px">
+        <div class="cf-avatar-upload" id="cfAvatarPreview">
+          <div class="cf-avatar-placeholder" id="cfAvatarPlaceholder">
+            <i class="fa-solid fa-camera" style="font-size:1.4rem;color:var(--c)"></i>
+            <span style="font-size:0.65rem;color:var(--muted);margin-top:4px;display:block">Tap to upload</span>
+          </div>
+          <img id="cfAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+        </div>
+        <input type="file" id="cfAvatarFile" accept="image/*" style="display:none">
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:6px">Profile photo</div>
+      </div>
+      <div class="cf-url-preview">
+        <i class="fa-solid fa-link" style="color:var(--muted);font-size:0.7rem;flex-shrink:0"></i>
+        <span class="cf-url-base">Cafe.jude/</span>
+        <span class="cf-url-slug" id="cfUrlSlug">yourname</span>
+      </div>
+      <div class="cf-field">
+        <i class="fa-solid fa-at cf-field-icon"></i>
+        <input type="text" class="cf-input" id="cfUsernameInput"
+          placeholder="Choose username"
+          maxlength="20" autocomplete="off">
+      </div>
+      <div class="cf-hint" id="cfUsernameHint"></div>
+      <div class="cf-field" style="margin-top:10px;position:relative">
+        <i class="fa-solid fa-lock cf-field-icon"></i>
+        <input type="password" class="cf-input" id="cfPasswordInput" placeholder="Set a password" maxlength="64" autocomplete="new-password" style="padding-right:44px">
+        <span onclick="cfTogglePw('cfPasswordInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      </div>
+      <div class="cf-field" style="margin-top:10px;position:relative">
+        <i class="fa-solid fa-lock cf-field-icon"></i>
+        <input type="password" class="cf-input" id="cfPasswordConfirmInput" placeholder="Confirm password" maxlength="64" autocomplete="new-password" style="padding-right:44px">
+        <span onclick="cfTogglePw('cfPasswordConfirmInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      </div>
+      <div class="cf-hint" id="cfPasswordHint"></div>
+      <div class="cf-checks">
+        <div class="cf-check-row" id="chkTosRow">
+          <div class="cf-check-box" id="chkTos"></div>
+          <div class="cf-check-label">I agree to the <a href="#" onclick="cfOpenLegal('tos');return false">Terms of Service</a></div>
+        </div>
+        <div class="cf-check-row" id="chkPrivacyRow">
+          <div class="cf-check-box" id="chkPrivacy"></div>
+          <div class="cf-check-label">I agree to the <a href="#" onclick="cfOpenLegal('privacy');return false">Privacy Policy</a> and allow my username to appear publicly</div>
+        </div>
+      </div>
+      <button class="cf-cta-btn" id="cfUsernameBtn">
+        <i class="fa-solid fa-rocket"></i> Create My Page
+      </button>
+    </div>
+  </div><!-- /cf-step-username -->
+
+  <!-- ══ STEP 2: DONATE ══ -->
+  <div class="cf-step" id="cf-step-donate">
+    <div class="caffe-hero" style="padding-top:16px">
+      <div class="caffe-orbit-wrap">
+        <div class="caffe-ring3"></div><div class="caffe-ring2"></div><div class="caffe-ring"></div>
+        <img class="caffe-avatar" src="https://i.postimg.cc/qqkPKYjW/file-0000000023c87209a82b615a648485e1.png" alt="Cafe. Jude">
+      </div>
+      <div class="caffe-name">Cafe. Jude</div>
+      <p class="caffe-tagline">Your support keeps the caffeine flowing</p>
+      <div class="cf-owner-badge"><i class="fa-solid fa-crown"></i> Buy. me &bull; cafe</div>
+    </div>
+    <!-- Welcome bar -->
+    <div class="cf-welcome-bar" id="cfWelcomeBar" style="display:none">
+      <span class="cf-welcome-text">Welcome back, <span class="cf-welcome-name" id="cfWelcomeName">User</span></span>
+    </div>
+    <!-- User bar -->
+    <div class="cf-user-bar" id="cfUserBar">
+      <div class="cf-user-bar-av-wrap" id="cfUserBarAvWrap">
+        <img class="cf-user-bar-av" id="cfUserBarAv" src="" alt="" style="display:none">
+        <div class="cf-user-bar-av-init" id="cfUserBarInit">?</div>
+      </div>
+      <div class="cf-user-bar-info">
+        <div class="cf-user-bar-name" id="cfUserBarName">Loading...</div>
+        <div class="cf-user-bar-url" id="cfUserBarUrl">Cafe.jude/...</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+        <div class="cf-user-bar-logout" id="cfSettingsBtn" style="color:var(--c);border-color:rgba(0,245,255,0.2)"><i class="fa-solid fa-gear"></i></div>
+      </div>
+    </div>
+    <!-- BACK TO HOME -->
+    <button class="cf-home-btn" id="cfDashboardBackBtn"><i class="fa-solid fa-house"></i> Back to Home</button>
+    <!-- Donation card -->
+    <div class="caffe-card">
+      <div class="caffe-sec-label"><i class="fa-solid fa-hand-holding-heart" style="color:var(--p)"></i> Choose Amount</div>
+      <div class="caffe-presets" id="caffePresets">
+        <div class="caffe-amt selected" data-amt="1">
+          <span class="caffe-amt-cup">☕</span>
+          <div class="caffe-amt-val">$1</div>
+          <div class="caffe-amt-lbl">Cappuccino</div>
+        </div>
+        <div class="caffe-amt" data-amt="2">
+          <span class="caffe-amt-cup">☕☕</span>
+          <div class="caffe-amt-val">$2</div>
+          <div class="caffe-amt-lbl">Matcha</div>
+        </div>
+        <div class="caffe-amt" data-amt="5">
+          <span class="caffe-amt-cup">🔥</span>
+          <div class="caffe-amt-val">$5</div>
+          <div class="caffe-amt-lbl">Cold brew</div>
+        </div>
+      </div>
+      <div class="caffe-input-wrap">
+        <i class="fa-solid fa-dollar-sign caffe-input-icon"></i>
+        <input type="number" class="caffe-input" id="caffeCustomAmt" placeholder="Custom amount..." min="0.5" step="0.5">
+      </div>
+      <div class="caffe-sec-label" style="margin-top:2px"><i class="fa-regular fa-message" style="color:var(--c)"></i> Leave a Message</div>
+      <textarea class="caffe-textarea" id="caffeMsg" placeholder="Leave a type message for the cafe list..."></textarea>
+      <button class="caffe-gen-btn" id="generateQrBtn">
+        <i class="fa-solid fa-qrcode"></i> Pay now
+      </button>
+    </div>
+    <!-- Wall of Fame (hidden on login, shown via back-to-home) -->
+    <div id="cfDonateWofSection" class="cf-hidden">
+    <div class="wof-header">
+      <div class="wof-title"><i class="fa-solid fa-star" style="color:var(--p)"></i> The Cafe List <span class="cf-live-dot">Live</span></div>
+      <div class="wof-count" id="wofCount2">0 supporters</div>
+    </div>
+    <div class="wof-feed" id="wofFeed2"></div>
+    <div class="caffe-note" style="margin-top:14px">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>Payments via <strong style="color:var(--c)">aba bank / khqr</strong> to see your name will appear on the cafe list after you tap add to cafe list. thanks for the donation</p>
+    </div>
+    </div><!-- /cfDonateWofSection -->
+  </div><!-- /cf-step-donate -->
+
+
+    <!-- FOOTER -->
+    <div class="cf-footer" id="cfFooter">
+      <div class="cf-footer-links">
+        <a href="#" onclick="cfOpenLegal('tos');return false"><i class="fa-solid fa-file-contract"></i> Terms</a>
+        <a href="#" onclick="cfOpenLegal('privacy');return false"><i class="fa-solid fa-shield-halved"></i> Privacy</a>
+        <a href="https://t.me/jude4tysm" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i> Telegram</a>
+      </div>
+      <div class="cf-footer-text">&copy; 2026 Cafe.jude &mdash; All rights reserved</div>
+    </div>
+
+</div><!-- /caffe-inner -->
+
+<!-- QR Modal -->
+<div id="caffeQrOverlay">
+  <div class="caffe-qr-sheet" id="caffeQrSheet">
+    <div class="qr-sheet-bar"></div>
+    <!-- Subtle decorations -->
+    <span class="qr-deco qr-deco-tl">✦</span>
+    <span class="qr-deco qr-deco-br">✦</span>
+    <span class="qr-deco-sl">★</span>
+    <span class="qr-deco-heart">♥</span>
+    <span class="qr-deco-sr">★</span>
+    <div class="qr-sheet-title">☕ Scan to Pay</div>
+    <div class="qr-sheet-sub" id="qrSheetSub">Supporting Mr. Jude</div>
+    <div class="qr-img-wrap" style="margin:0 auto 20px">
+      <img src="https://i.postimg.cc/CMJS2vVZ/IMG-20260509-120843.png" alt="ABA KHQR" id="caffeQrImg">
+    </div>
+    <div class="qr-amount-chip">
+      <i class="fa-solid fa-mug-hot"></i> <span id="qrAmountText">$1.00</span>
+    </div>
+    <div class="qr-msg-box">
+      <div style="font-size:0.7rem;color:var(--soft);line-height:1.7">
+        <i class="fa-solid fa-mug-hot" style="color:var(--c);margin-right:6px"></i>Your select donate <strong id="qrMsgAmount" style="color:var(--c)">$1.00</strong> screenshot qr open banking app scan &amp; pay then tap <span class="qr-rb">add to cafe list</span>. <span style="color:var(--c);font-weight:600">thanksomuch</span>
+      </div>
+    </div>
+    <button class="cf-cta-btn" id="markPaidBtn" style="margin-bottom:12px">
+      <i class="fa-solid fa-check-circle"></i> Add to cafe list
+    </button>
+    <button class="qr-close-btn" id="closeQrBtn"><i class="fa-solid fa-xmark"></i> Close</button>
+
+    <!-- Success Screen -->
+    <div id="qrSuccessScreen">
+      <div class="qr-reply-card">
+        <div class="qr-reply-header">
+          <div class="qr-reply-av"><i class="fa-solid fa-mug-hot"></i></div>
+          <div>
+            <div class="qr-reply-sender">Cafe.jude</div>
+            <div class="qr-reply-badge">Owner &bull; Admin</div>
+          </div>
+          <div style="margin-left:auto">
+            <div class="qr-check-pop"><svg viewBox="0 0 24 24" fill="none" stroke="#050a12" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+        <div class="qr-reply-msg">Your support has been received successfully<br>thank you for supporting <strong id="qrSuccessAmt">$1.00</strong> you are now on <strong>the cafe list!</strong> 🚚</div>
+        <div class="qr-reply-amount"><i class="fa-solid fa-coins"></i> Payment confirmed</div>
+        <div class="qr-reply-ts"><i class="fa-solid fa-circle" style="font-size:0.4rem;color:#39ff9a;margin-right:4px"></i>Just now</div>
+      </div>
+      <button class="qr-back-btn" id="qrBackHomeBtn"><i class="fa-solid fa-house"></i> Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="caffeToast"><i class="fa-solid fa-check"></i> <span id="cfToastMsg">Done!</span></div>
+
+<!-- Profile Modal -->
+<div id="cfProfileModal">
+  <div class="cf-profile-sheet" id="cfProfileSheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-ps-av-wrap" id="cfPsAvWrap">
+      <img class="cf-ps-avatar" id="cfPsAvatar" src="" alt="" style="display:none">
+      <div class="cf-ps-av-init" id="cfPsAvInit">?</div>
+    </div>
+    <div class="cf-ps-name" id="cfPsName">Username</div>
+    <div class="cf-ps-url" id="cfPsUrl">Cafe.jude/username</div>
+    <div class="cf-ps-member-badge" id="cfPsMemberBadge" style="display:none;margin-bottom:12px"></div>
+    <div class="cf-ps-verified"><span class="vbadge-icon"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="vbg2" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#6688ff"/><stop offset="100%" stop-color="#1133cc"/></radialGradient><linearGradient id="vshine2" x1="0%" y1="0%" x2="60%" y2="100%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><path d="M50 5 Q55 1 59 7 Q63 2 68 6 Q70 0 76 5 Q76 -1 82 4 Q80 -2 86 4 Q82 -2 88 4 Q82 3 85 10 Q90 6 91 13 Q97 11 96 18 Q102 18 99 24 Q105 26 100 31 Q106 35 99 38 Q105 43 97 45 Q102 51 94 51 Q99 58 91 57 Q94 64 86 62 Q87 69 79 67 Q78 74 71 68 Q68 76 62 70 Q57 77 50 71 Q43 77 38 70 Q32 76 29 68 Q21 74 22 67 Q14 69 16 62 Q8 63 11 57 Q3 57 8 51 Q0 51 5 45 Q-3 43 3 38 Q-2 35 4 31 Q-1 26 5 24 Q2 18 8 18 Q7 11 13 13 Q12 6 18 10 Q17 4 23 5 Q21 -2 27 4 Q27 -2 32 4 Q30 -2 36 3 Q38 -2 44 3 Q44 -2 50 5Z" fill="url(#vbg2)"/><path d="M50 5 Q55 1 59 7 Q63 2 68 6 Q70 0 76 5 Q76 -1 82 4 Q80 -2 86 4 Q82 3 85 10 Q90 6 91 13 Q97 11 96 18 Q98 22 97 26" fill="url(#vshine2)" opacity="0.5"/><polyline points="33,51 45,64 68,38" stroke="white" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span> Verified Real Account</div>
+    <div class="cf-ps-stats">
+      <div class="cf-ps-stat">
+        <div class="cf-ps-stat-num" id="cfPsCoffees">0</div>
+        <div class="cf-ps-stat-lbl">Coffees Bought</div>
+      </div>
+      <div class="cf-ps-stat">
+        <div class="cf-ps-stat-num" id="cfPsJoined">—</div>
+        <div class="cf-ps-stat-lbl">Member Since</div>
+      </div>
+    </div>
+    <button class="cf-ps-close" id="closeProfileBtn"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+
+<!-- Settings Modal -->
+<div id="cfSettingsModal">
+  <div class="cf-settings-sheet" id="cfSettingsSheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-settings-title"><i class="fa-solid fa-gear"></i> Settings</div>
+    <!-- User info header -->
+    <div style="text-align:center;margin-bottom:18px">
+      <div id="cfSetAvWrap" style="width:64px;height:64px;margin:0 auto 8px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,245,255,0.25)">
+        <img id="cfSetAv" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover">
+        <div id="cfSetAvInit" style="width:100%;height:100%;background:linear-gradient(135deg,var(--c),var(--p));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#050a12">?</div>
+      </div>
+      <div id="cfSetName" style="font-size:0.88rem;font-weight:700">Username</div>
+      <div id="cfSetUrl" style="font-size:0.64rem;color:var(--c);margin-top:2px">Cafe.jude/user</div>
+    </div>
+    <div class="cf-set-item" id="cfSetEditBtn">
+      <div class="cf-set-icon blue"><i class="fa-solid fa-user-pen"></i></div>
+      <div class="cf-set-label">Edit info</div>
+      <div class="cf-set-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="cf-set-cd-timer" id="cfSetEditCd"><i class="fa-solid fa-clock"></i> <span id="cfSetEditCdText">—</span></div>
+    <div class="cf-set-item" id="cfSetPwBtn">
+      <div class="cf-set-icon purple"><i class="fa-solid fa-key"></i></div>
+      <div class="cf-set-label">Change Password</div>
+      <div class="cf-set-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="cf-set-cd-timer" id="cfSetPwCd"><i class="fa-solid fa-clock"></i> <span id="cfSetPwCdText">—</span></div>
+    <div class="cf-set-item" id="cfSetGiftBtn" style="display:none">
+      <div class="cf-set-icon gold"><i class="fa-solid fa-gift"></i></div>
+      <div class="cf-set-label" style="color:var(--gold)">Gift Panel</div>
+      <div class="cf-set-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+    <div class="cf-set-divider"></div>
+    <div class="cf-set-item" id="cfSetLogoutBtn">
+      <div class="cf-set-icon red"><i class="fa-solid fa-right-from-bracket"></i></div>
+      <div class="cf-set-label" style="color:#ff6b6b">Log Out</div>
+    </div>
+    <button class="qr-close-btn" id="cfSettingsCloseBtn" style="margin-top:12px">
+      <i class="fa-solid fa-xmark"></i> Close
+    </button>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="cfEditModal">
+  <div class="cf-edit-sheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-edit-title">Edit Info</div>
+    <div class="cf-edit-av-wrap">
+      <div class="cf-avatar-upload" id="cfEditAvatarUpload" style="margin:0 auto">
+        <div class="cf-avatar-placeholder" id="cfEditAvatarPh">
+          <i class="fa-solid fa-camera" style="font-size:1.4rem;color:var(--c)"></i>
+          <span style="font-size:0.65rem;color:var(--muted);margin-top:4px;display:block">Change photo</span>
+        </div>
+        <img id="cfEditAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+      </div>
+      <input type="file" id="cfEditAvatarFile" accept="image/*" style="display:none">
+      <div style="font-size:0.65rem;color:var(--muted);margin-top:8px;text-align:center">Tap to change photo</div>
+    </div>
+    <div class="cf-field" style="margin-bottom:6px">
+      <i class="fa-solid fa-user cf-field-icon"></i>
+      <input type="text" class="cf-input" id="cfEditNameInput" placeholder="Display name" maxlength="30">
+    </div>
+    <div style="font-size:0.65rem;color:var(--muted);margin-bottom:16px;padding-left:4px">This is the name shown on the cafe list</div>
+    <button class="cf-cta-btn" id="cfEditSaveBtn" style="margin-bottom:10px">
+      <i class="fa-solid fa-check"></i> Save Changes
+    </button>
+    <button class="qr-close-btn" id="cfEditCancelBtn"><i class="fa-solid fa-xmark"></i> Cancel</button>
+  </div>
+</div>
+
+<!-- Change Password Modal (separate) -->
+<div id="cfPwModal">
+  <div class="cf-pw-sheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-edit-title"><i class="fa-solid fa-key" style="margin-right:6px"></i> Change Password</div>
+    <div class="cf-field" style="margin-bottom:8px;position:relative">
+      <i class="fa-solid fa-lock cf-field-icon"></i>
+      <input type="password" class="cf-input" id="cfPwCurrentInput" placeholder="Current password" maxlength="64" autocomplete="off" style="padding-right:44px">
+      <span onclick="cfTogglePw('cfPwCurrentInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    </div>
+    <div class="cf-field" style="margin-bottom:8px;position:relative">
+      <i class="fa-solid fa-unlock cf-field-icon"></i>
+      <input type="password" class="cf-input" id="cfPwNewInput" placeholder="New password" maxlength="64" autocomplete="off" style="padding-right:44px">
+      <span onclick="cfTogglePw('cfPwNewInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    </div>
+    <div class="cf-field" style="position:relative">
+      <i class="fa-solid fa-lock cf-field-icon"></i>
+      <input type="password" class="cf-input" id="cfPwConfirmInput" placeholder="Confirm new password" maxlength="64" autocomplete="off" style="padding-right:44px">
+      <span onclick="cfTogglePw('cfPwConfirmInput',this)" class="pw-eye-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    </div>
+    <div class="cf-hint" id="cfPwHint"></div>
+    <button class="cf-cta-btn" id="cfPwSaveBtn" style="margin-bottom:10px;margin-top:6px">
+      <i class="fa-solid fa-check"></i> Update Password
+    </button>
+    <button class="qr-close-btn" id="cfPwCancelBtn"><i class="fa-solid fa-xmark"></i> Cancel</button>
+  </div>
+</div>
+
+
+
+
+<!-- Terms of Service Modal -->
+<div class="cf-legal-overlay" id="cfTosModal">
+  <div class="cf-legal-sheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-legal-title"><i class="fa-solid fa-file-contract"></i> Terms of Service</div>
+    <div class="cf-legal-body">
+      <p>Last updated: January 2026</p>
+      <p>Welcome to <strong>Cafe.jude</strong> ("Buyme.cafe"). By creating an account or using our platform, you agree to the following terms.</p>
+
+      <h3><i class="fa-solid fa-user-check"></i> Account Creation</h3>
+      <ul>
+        <li>You must choose a unique username and a secure password minimum 6 characters</li>
+        <li>Each person may create one account. Duplicate or spam accounts may be removed</li>
+        <li>You are responsible for keeping your login credentials secure</li>
+        <li>Profile images must be appropriate and non offensive</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-mug-hot"></i> Donations & Payments</h3>
+      <ul>
+        <li>All donations are voluntary and non refundable</li>
+        <li>Payments are processed via ABA Bank / KHQR</li>
+        <li>Donation amounts and messages are displayed publicly on the Cafe List</li>
+        <li>We do not store or process payment card information directly</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-comment-dots"></i> Messages & Content</h3>
+      <ul>
+        <li>Messages left with donations are publicly visible</li>
+        <li>You must not post spam, offensive, hateful, or illegal content</li>
+        <li>The admin reserves the right to delete any message without notice</li>
+        <li>Repeated violations may result in account restriction</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-pen"></i> Profile Editing</h3>
+      <ul>
+        <li>You may edit your display name and profile image</li>
+        <li>A cooldown of 1 hour 30 minutes applies between edits to prevent abuse</li>
+        <li>Usernames cannot be changed after account creation</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-shield-halved"></i> Platform Rules</h3>
+      <ul>
+        <li>Do not impersonate other users or public figures</li>
+        <li>Do not attempt to exploit, hack, or disrupt the platform</li>
+        <li>We reserve the right to suspend or terminate accounts that violate these terms</li>
+        <li>These terms may be updated continued use constitutes acceptance</li>
+      </ul>
+
+      <p>For questions, contact us via <a href="https://t.me/jude4tysm" target="_blank" style="color:var(--c)">Telegram</a>.</p>
+    </div>
+    <button class="qr-close-btn" id="cfTosCloseBtn" style="margin-top:14px"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="cf-legal-overlay" id="cfPrivacyModal">
+  <div class="cf-legal-sheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-legal-title"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</div>
+    <div class="cf-legal-body">
+      <p>Last updated: January 2026</p>
+      <p>Your privacy matters to us. This policy explains how <strong>Cafe.jude</strong> collects, uses, and protects your information.</p>
+
+      <h3><i class="fa-solid fa-database"></i> Information We Collect</h3>
+      <ul>
+        <li><strong>Account data:</strong> Username, display name, and profile image stored as base64</li>
+        <li><strong>Password:</strong> Stored as a one way SHA-256 hash we never store or see your actual password</li>
+        <li><strong>Donation data:</strong> Amount, message, and timestamp when you make a donation</li>
+        <li>We do <strong>not</strong> collect email addresses, phone numbers, or payment card details</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-cloud"></i> How Data Is Stored</h3>
+      <ul>
+        <li>All data is stored securely on Google Firebase</li>
+        <li>Your session is saved locally in your browser localStorage for convenience</li>
+        <li>Profile images are stored as base64 strings within the database</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-eye"></i> What Is Publicly Visible</h3>
+      <ul>
+        <li>Your username, display name, and profile image</li>
+        <li>Donation amounts and messages on the Cafe List</li>
+        <li>Your profile URL Cafe.jude/username</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-lock"></i> What Is Private</h3>
+      <ul>
+        <li>Your password hashed, never exposed</li>
+        <li>Your internal user ID</li>
+        <li>Your browser session data</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-trash"></i> Data Deletion</h3>
+      <ul>
+        <li>You may request account deletion by contacting the admin</li>
+        <li>The admin can remove messages from the Cafe List at any time</li>
+        <li>Deleted data is permanently removed from the database</li>
+      </ul>
+
+      <h3><i class="fa-solid fa-cookie-bite"></i> Cookies & Local Storage</h3>
+      <ul>
+        <li>We use localStorage to save your login session and theme preference</li>
+        <li>We do not use tracking cookies or third party analytics beyond Firebase/Google Analytics</li>
+      </ul>
+
+      <p>Questions? Reach out on <a href="https://t.me/jude4tysm" target="_blank" style="color:var(--c)">Telegram</a>.</p>
+    </div>
+    <button class="qr-close-btn" id="cfPrivacyCloseBtn" style="margin-top:14px"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+
+<!-- Shop Modal -->
+<div id="cfShopModal">
+  <div class="cf-shop-sheet" id="cfShopSheet">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-shop-title"><i class="fa-solid fa-store"></i> Style Shop</div>
+    <div class="cf-shop-sub">Customize your profile with unique styles</div>
+    <div class="cf-coins-bar"><div class="cf-coins-icon"><i class="fa-solid fa-coins"></i></div><div><div class="cf-coins-amount" id="cfShopCoins">0</div><div class="cf-coins-label">Your Coins</div></div></div>
+    <div class="cf-style-card cf-style-1"><div class="cf-style-header"><div class="cf-style-name">Clean Glow</div><div class="cf-style-price"><i class="fa-solid fa-coins"></i> 15</div></div><div class="cf-style-preview"><div class="cf-style-preview-name cf-name-s1">@YourName</div></div><div class="cf-style-desc">Subtle cyan glow on your username. Clean and elegant.</div><button class="cf-style-buy-btn primary" id="cfBuyStyle1"><i class="fa-solid fa-coins"></i> Purchase — 15 coins</button></div>
+    <div class="cf-style-card cf-style-2"><div class="cf-style-header"><div class="cf-style-name">Gradient Shift</div><div class="cf-style-price"><i class="fa-solid fa-coins"></i> 50</div></div><div class="cf-style-preview"><div class="cf-style-preview-name cf-name-s2">@YourName</div></div><div class="cf-style-desc">Flowing purple pink gold gradient with pulse animation.</div><button class="cf-style-buy-btn primary" id="cfBuyStyle2"><i class="fa-solid fa-coins"></i> Purchase — 50 coins</button></div>
+    <div class="cf-style-card cf-style-3"><div class="cf-style-header"><div class="cf-style-name">Premium Crown</div><div class="cf-style-price" style="color:#ff6b9d"><i class="fa-solid fa-ban"></i> Not for sale</div></div><div class="cf-style-preview"><div class="cf-style-preview-name cf-name-s3">@YourName</div></div><div class="cf-style-desc">Animated rainbow text with golden glow the ultimate flex.<br><strong style="color:var(--gold)">This style cannot be purchased it is exclusively gifted by the admin.</strong></div><div class="cf-member-gift-label"><i class="fa-solid fa-gift"></i> For: Members of cafe.jude</div><button class="cf-style-buy-btn locked" id="cfBuyStyle3" style="cursor:default"><i class="fa-solid fa-lock"></i> Not Purchasable</button></div>
+    <div class="cf-shop-admin"><div class="cf-shop-admin-title"><i class="fa-solid fa-headset"></i> Get Coins</div><img class="cf-shop-admin-av" src="https://i.postimg.cc/qqkPKYjW/file-0000000023c87209a82b615a648485e1.png" alt="Admin"><div class="cf-shop-admin-name">Cafe. Jude</div><div class="cf-shop-admin-badge"><i class="fa-solid fa-crown"></i> Owner / Admin</div><p style="font-size:0.7rem;color:var(--soft);margin-bottom:14px;line-height:1.6">10 coins = $1 contact me on telegram to purchase coins or buy styles.</p><a href="https://t.me/jude4tysm?text=Hello%2C%20I%20would%20like%20to%20buy%20coins%20for%20my%20Cafe.jude%20profile" target="_blank" rel="noopener" class="cf-shop-tg-btn"><i class="fa-brands fa-telegram"></i> Contact via Telegram</a></div>
+    <button class="qr-close-btn" id="cfShopCloseBtn" style="margin-top:14px"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+<!-- Admin Gift Modal (Membership + Coins) -->
+<div id="cfGiftModal">
+  <div class="cf-gift-sheet" style="max-height:88vh;overflow-y:auto">
+    <div class="qr-sheet-bar"></div>
+    <div class="cf-gift-title"><i class="fa-solid fa-gift"></i> Admin Gifts</div>
+    <div class="cf-gift-result" id="cfGiftResult"><i class="fa-solid fa-circle-check"></i> <span id="cfGiftResultText"></span></div>
+
+    <!-- ══ SECTION 1: GIFT MEMBERSHIP ══ -->
+    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.06),rgba(180,79,255,0.04));border:1px solid rgba(255,215,0,0.22);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),#ff6b35,var(--gold));background-size:200%;animation:shimmerBar 2s linear infinite"></div>
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:7px"><i class="fa-solid fa-crown"></i> Gift</div>
+      <div style="font-size:0.65rem;color:var(--soft);margin-bottom:10px;line-height:1.6">Grants <strong style="color:var(--gold)">Premium Crown</strong> style + <strong style="color:var(--gold)">Member of cafe.jude</strong> badge</div>
+      <div class="cf-field" style="margin-bottom:10px">
+        <i class="fa-solid fa-at cf-field-icon"></i>
+        <input type="text" class="cf-input" id="cfGiftMemberUsername" placeholder="Enter username" maxlength="20" autocomplete="off">
+      </div>
+      <button class="cf-cta-btn" id="cfGiftMemberBtn" style="background:linear-gradient(135deg,var(--gold),#ff6b35);box-shadow:0 4px 16px rgba(255,215,0,0.25)">
+        <i class="fa-solid fa-crown"></i> Gift
+      </button>
+    </div>
+
+    <!-- ══ SECTION 2: GIFT COINS ══ -->
+    <div style="background:var(--card);border:1px solid rgba(0,245,255,0.10);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c),var(--p))"></div>
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--c);margin-bottom:12px;display:flex;align-items:center;gap:7px"><i class="fa-solid fa-coins"></i> Gift Coins</div>
+      <div style="font-size:0.65rem;color:var(--soft);margin-bottom:10px;line-height:1.6">10 coins = $1 — Only admin can gift coins</div>
+      <div class="cf-field" style="margin-bottom:10px">
+        <i class="fa-solid fa-at cf-field-icon"></i>
+        <input type="text" class="cf-input" id="cfGiftUsername" placeholder="Enter username" maxlength="20" autocomplete="off">
+      </div>
+      <div class="cf-field" style="margin-bottom:10px">
+        <i class="fa-solid fa-coins cf-field-icon" style="color:var(--gold)"></i>
+        <input type="number" class="cf-input" id="cfGiftAmount" placeholder="Number of coins" min="1" step="1">
+      </div>
+      <button class="cf-cta-btn" id="cfGiftSendBtn" style="background:linear-gradient(135deg,var(--c),var(--p));box-shadow:0 4px 16px rgba(0,245,255,0.25)">
+        <i class="fa-solid fa-coins"></i> Send Coins
+      </button>
+    </div>
+
+    <button class="qr-close-btn" id="cfGiftCloseBtn"><i class="fa-solid fa-xmark"></i> Close</button>
+  </div>
+</div>
+
+<script>
+/* ── SFX ── */
+let _ax=null;
+function ac(){if(!_ax)_ax=new(window.AudioContext||window.webkitAudioContext)();return _ax;}
+function sfxClick(){try{const c=ac(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(1100,c.currentTime);o.frequency.exponentialRampToValueAtTime(550,c.currentTime+.07);g.gain.setValueAtTime(.12,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.11);o.start();o.stop(c.currentTime+.11);}catch(e){}}
+function sfxNav(){try{const c=ac(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(660,c.currentTime);o.frequency.linearRampToValueAtTime(880,c.currentTime+.1);g.gain.setValueAtTime(.1,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.18);o.start();o.stop(c.currentTime+.18);}catch(e){}}
+function sfxTheme(d){try{const c=ac(),fs=d?[880,660]:[440,660];fs.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;const t=c.currentTime+i*.08;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.1,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.start(t);o.stop(t+.15);});}catch(e){}}
+
+/* ── THEME ── */
+const html=document.documentElement;
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){
+  html.setAttribute('data-theme',t);
+  themeBtn.innerHTML=t==='dark'?'&#9790;':'&#9728;';
+  localStorage.setItem('jt',t);
+}
+setTheme(localStorage.getItem('jt')||'dark');
+themeBtn.addEventListener('click',()=>{const n=html.getAttribute('data-theme')==='dark'?'light':'dark';sfxTheme(n==='dark');setTheme(n);});
+
+/* ══ CONFIG ══ */
+const ABA_NUMBER='012 345 678';
+const SITE_DOMAIN='Cafe.jude';
+const ADMIN_USER='jude4tysm';
+
+/* ── STATE ── */
+let cfCurrentUser=null,caffeSelectedAmt='1',cfChecks={tos:false,privacy:false};
+let wofDonors=[],cfPendingPaid=null,cfAvatarB64='',cfUnsubscribe=null,cfDbCache=null;
+
+/* ── EDIT COOLDOWN (90 min) ── */
+const CF_COOLDOWN_MS=90*60*1000;
+/* Dual cooldown: 'edit' for info, 'pw' for password */
+function cfGetCdTime(uid,type){try{return parseInt(localStorage.getItem('cfCd_'+type+'_'+uid)||'0',10);}catch(e){return 0;}}
+function cfSetCdTime(uid,type){try{localStorage.setItem('cfCd_'+type+'_'+uid,Date.now().toString());}catch(e){}}
+function cfCheckCd(uid,type){var last=cfGetCdTime(uid,type);if(!last)return 0;var el=Date.now()-last;return el<CF_COOLDOWN_MS?CF_COOLDOWN_MS-el:0;}
+/* Backward compat wrappers */
+function cfGetLastEditTime(uid){return cfGetCdTime(uid,'edit');}
+function cfSetLastEditTime(uid){cfSetCdTime(uid,'edit');}
+function cfCheckCooldown(uid){return cfCheckCd(uid,'edit');}
+function cfFormatTimeLeft(ms){var s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60,p=[];if(h>0)p.push(h+'h');if(m>0||h>0)p.push(m+'m');p.push(sec+'s');return p.join(' ');}
+
+/* ── SHA-256 ── */
+async function hashPassword(pw){
+  const enc=new TextEncoder();
+  const buf=await crypto.subtle.digest('SHA-256',enc.encode('cafe_salt_2025_'+pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── PASSWORD TOGGLE ── */
+function cfTogglePw(id,btn){
+  const inp=document.getElementById(id);if(!inp)return;
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.innerHTML=show?'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>':'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+/* ── SVG CUP ── */
+let _cupId=0;
+function cfCupSVG(size,color1,color2,steam){
+  size=size||'md';color1=color1||'#00f5ff';color2=color2||'#b44fff';steam=steam!==false;
+  const uid='c'+(++_cupId);
+  const px={sm:20,md:34,lg:52,xl:70}[size]||34;
+  const st=steam?'<ellipse class="cf-steam-1" cx="10" cy="5" rx="1.2" ry="2.2" fill="'+color1+'" opacity=".65"/><ellipse class="cf-steam-2" cx="14" cy="3.5" rx="1.1" ry="2" fill="'+color2+'" opacity=".55"/><ellipse class="cf-steam-3" cx="18" cy="5.5" rx="1.0" ry="1.8" fill="'+color1+'" opacity=".5"/>'  :'';
+  return '<span class="cf-cup-wrap"><svg class="cf-cup-svg" width="'+px+'" height="'+px+'" viewBox="0 0 28 30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cg'+uid+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3050"/><stop offset="100%" stop-color="#0a1525"/></linearGradient><linearGradient id="lg'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color1+'" stop-opacity=".55"/><stop offset="100%" stop-color="'+color2+'" stop-opacity=".3"/></linearGradient><linearGradient id="rg'+uid+'" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="'+color1+'"/><stop offset="100%" stop-color="'+color2+'"/></linearGradient><linearGradient id="hg'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color1+'"/><stop offset="100%" stop-color="'+color2+'"/></linearGradient><clipPath id="cc'+uid+'"><path d="M5,10 L7,26 Q7,27 8,27 L20,27 Q21,27 21,26 L23,10 Z"/></clipPath></defs>'+st+'<path d="M5,10 L7,26 Q7,27 8,27 L20,27 Q21,27 21,26 L23,10 Z" fill="url(#cg'+uid+')" stroke="rgba(0,245,255,0.25)" stroke-width=".4"/><rect x="4" y="16" width="21" height="12" fill="url(#lg'+uid+')" clip-path="url(#cc'+uid+')" opacity=".75"/><rect x="4.5" y="9" width="19" height="2.5" rx="1.2" fill="url(#rg'+uid+')"/><path d="M22,14 Q27,14 27,18 Q27,22 22,22" stroke="url(#hg'+uid+')" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="20" rx="3.2" ry="2.2" fill="rgba(0,0,0,0.2)"/></svg></span>';
+}
+function cfInitCups(){
+  const defs=[{label:'$1',sub:'Cappuccino',c1:'#00f5ff',c2:'#b44fff'},{label:'$2',sub:'Matcha tier',c1:'#00f5ff',c2:'#b44fff'},{label:'$5',sub:'Cold brew',c1:'#ffd700',c2:'#ff6b35'}];
+  document.querySelectorAll('.caffe-amt').forEach((el,i)=>{
+    const d=defs[i];if(!d)return;
+    el.innerHTML='<div class="cf-cup-lg">'+cfCupSVG('md',d.c1,d.c2,true)+'</div><div class="caffe-amt-val">'+d.label+'</div><div class="caffe-amt-lbl">'+d.sub+'</div>';
+  });
+}
+
+/* ── FIREBASE FIRESTORE ── */
+async function fbRead(){
+  try{
+    const{doc,getDoc}=await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js');
+    const db=window._cfFirestore;
+    const snap=await getDoc(doc(db,'cafe','data'));
+    if(!snap.exists()){console.log('[cafe] fbRead: no data yet');return{users:[],donations:[]};}
+    const d=snap.data();
+    const users=Array.isArray(d.users)?d.users:[];
+    const donations=Array.isArray(d.donations)?d.donations:[];
+    console.log('[cafe] fbRead OK users:'+users.length+' donations:'+donations.length);
+    return{users,donations};
+  }catch(e){
+    console.error('[cafe] fbRead FAILED:',e.message||e);
+    return{users:[],donations:[]};
+  }
+}
+async function fbWrite(data){
+  try{
+    const{doc,setDoc}=await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js');
+    const db=window._cfFirestore;
+    const payload={
+      users:Array.isArray(data&&data.users)?data.users:[],
+      donations:Array.isArray(data&&data.donations)?data.donations:[]
+    };
+    await setDoc(doc(db,'cafe','data'),payload);
+    console.log('[cafe] fbWrite OK');return true;
+  }catch(e){
+    console.error('[cafe] fbWrite FAILED:',e.message||e);return false;
+  }
+}
+
+/* ── STEP NAV ── */
+function cfGoStep(name){
+  sfxNav();
+  document.querySelectorAll('.cf-step').forEach(function(s){s.classList.remove('cf-active');});
+  const el=document.getElementById('cf-step-'+name);
+  if(el){
+    el.classList.add('cf-active');
+    if(typeof gsap!=='undefined'){
+      const ch=Array.from(el.children);
+      if(ch.length)gsap.fromTo(ch,{opacity:0,y:22},{opacity:1,y:0,stagger:.06,duration:.42,ease:'power3.out'});
+    }
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── AVATAR ── */
+function cfHandleAvatar(input,target){
+  target=target||'create';
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){cfShowToast('Please select an image');input.value='';return;}
+  if(file.size>800000){cfShowToast('Image too large (max 800KB)');input.value='';return;}
+  const reader=new FileReader();
+  reader.onerror=function(){cfShowToast('Failed to read image');};
+  reader.onload=function(e){
+    const b64=e.target.result;cfAvatarB64=b64;
+    if(target==='create'){
+      const img=document.getElementById('cfAvatarImg'),ph=document.getElementById('cfAvatarPlaceholder');
+      if(img){img.src=b64;img.style.display='block';}if(ph)ph.style.display='none';
+    }else{
+      const img=document.getElementById('cfEditAvatarImg'),ph=document.getElementById('cfEditAvatarPh');
+      if(img){img.src=b64;img.style.display='block';}if(ph)ph.style.display='none';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── USERNAME PREVIEW ── */
+function cfPreviewUsername(val){
+  const slug=document.getElementById('cfUrlSlug'),input=document.getElementById('cfUsernameInput'),hint=document.getElementById('cfUsernameHint');
+  if(!slug||!input||!hint)return;
+  let clean=val.toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,20);
+  if(val!==clean){input.value=clean;val=clean;}
+  slug.textContent=clean||'yourname';
+  if(!clean){slug.className='cf-url-slug';hint.textContent='';return;}
+  if(clean.length<3){slug.className='cf-url-slug invalid';hint.textContent='Min 3 characters';hint.className='cf-hint err';return;}
+  slug.className='cf-url-slug valid';hint.textContent='Looks good!';hint.className='cf-hint ok';
+}
+function cfToggleCheck(id){
+  sfxClick();const box=document.getElementById(id);if(!box)return;
+  const key=id==='chkTos'?'tos':'privacy';
+  const isChecked=box.classList.contains('checked');
+  cfChecks[key]=!isChecked;
+  box.classList.toggle('checked',cfChecks[key]);
+}
+
+/* ── SESSION ── */
+function cfSaveLocal(u){try{localStorage.setItem('cfSession',JSON.stringify(u));}catch(e){console.error('[cafe] save:',e);}}
+function cfLoadLocal(){try{const d=localStorage.getItem('cfSession');return d?JSON.parse(d):null;}catch(e){return null;}}
+
+/* ── CREATE PAGE ── */
+async function cfSubmitUsername(){
+  sfxClick();
+  const raw=(document.getElementById('cfUsernameInput').value||'').trim();
+  const username=raw.toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,20);
+  const pw=(document.getElementById('cfPasswordInput')?document.getElementById('cfPasswordInput').value:'');
+  const pw2=(document.getElementById('cfPasswordConfirmInput')?document.getElementById('cfPasswordConfirmInput').value:'');
+  const hint=document.getElementById('cfUsernameHint');
+  const pwHint=document.getElementById('cfPasswordHint');
+  const btn=document.getElementById('cfUsernameBtn');
+  if(username.length<3){if(hint){hint.textContent='Min 3 characters';hint.className='cf-hint err';}return;}
+  if(pw.length<6){if(pwHint){pwHint.textContent='Password min 6 characters';pwHint.className='cf-hint err';}return;}
+  if(pw!==pw2){if(pwHint){pwHint.textContent='Passwords do not match';pwHint.className='cf-hint err';}return;}
+  if(pwHint)pwHint.textContent='';
+  cfChecks.tos=!!(document.getElementById('chkTos')&&document.getElementById('chkTos').classList.contains('checked'));
+  cfChecks.privacy=!!(document.getElementById('chkPrivacy')&&document.getElementById('chkPrivacy').classList.contains('checked'));
+  if(!cfChecks.tos||!cfChecks.privacy){
+    cfShowToast('Please accept both terms');
+    const cd=document.querySelector('.cf-checks');
+    if(cd&&typeof gsap!=='undefined')gsap.fromTo(cd,{x:-5},{x:0,duration:.4,ease:'elastic.out(1,.3)'});
+    return;
+  }
+  if(btn){btn.disabled=true;btn.innerHTML='Checking...';}
+  if(hint){hint.textContent='Checking availability...';hint.className='cf-hint ok';}
+
+  // FIXED: GET existing data first, extract both arrays safely
+  const db=await fbRead();
+  const existingUsers=Array.isArray(db.users)?db.users:[];
+  const existingDonations=Array.isArray(db.donations)?db.donations:[];
+  cfDbCache={users:existingUsers,donations:existingDonations};
+
+  if(existingUsers.find(function(u){return u.username===username;})){
+    if(hint){hint.textContent='Username taken, try another';hint.className='cf-hint err';}
+    if(btn){btn.disabled=false;btn.innerHTML='Create My Page';}
+    return;
+  }
+  if(btn)btn.innerHTML='Creating...';
+  const pwHash=await hashPassword(pw);
+  const newUser={uid:'u_'+Date.now(),username:username,displayName:username,avatarB64:cfAvatarB64||'',pwHash:pwHash,joinedAt:new Date().toISOString(),coffeeCount:0,coins:0,profileStyle:0,isAdmin:username===ADMIN_USER};
+
+  // FIXED: spread existing users + keep donations untouched
+  const updatedUsers=[...existingUsers,newUser];
+  const saved=await fbWrite({users:updatedUsers,donations:existingDonations});
+
+  if(btn){btn.disabled=false;btn.innerHTML='Create My Page';}
+  if(!saved){cfShowToast('Failed to create page. Check connection.');if(hint){hint.textContent='Server error. Try again.';hint.className='cf-hint err';}return;}
+  cfDbCache={users:updatedUsers,donations:existingDonations};
+  const su=Object.assign({},newUser);delete su.pwHash;
+  cfCurrentUser=su;cfSaveLocal(su);cfAvatarB64='';
+  console.log('[cafe] account created:',username);
+  cfEnterDonate();
+}
+
+/* ── LOGIN ── */
+async function cfLoginSubmit(){
+  sfxClick();
+  const username=((document.getElementById('cfLoginUsernameInput')||{}).value||'').trim().toLowerCase();
+  const pw=(document.getElementById('cfLoginPasswordInput')?document.getElementById('cfLoginPasswordInput').value:'');
+  const hint=document.getElementById('cfLoginHint');
+  const btn=document.getElementById('cfLoginSubmitBtn');
+  if(!username){if(hint){hint.textContent='Enter your username';hint.className='cf-hint err';}return;}
+  if(!pw){if(hint){hint.textContent='Enter your password';hint.className='cf-hint err';}return;}
+  if(hint){hint.textContent='Checking...';hint.className='cf-hint ok';}
+  if(btn){btn.disabled=true;btn.innerHTML='Checking...';}
+
+  // FIXED: retry only on a genuine fetch failure (empty users[] is valid)
+  let db=await fbRead();
+  if(!db.users){
+    if(hint){hint.textContent='Retrying...';hint.className='cf-hint ok';}
+    await new Promise(function(r){setTimeout(r,2000);});
+    db=await fbRead();
+  }
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Login';}
+  cfDbCache=db;
+
+  // find from data.users (fbRead always returns the correct key)
+  const found=(db.users||[]).find(function(u){return u.username===username;});
+  if(!found){if(hint){hint.textContent='Username not found. Create a page first!';hint.className='cf-hint err';}return;}
+  if(found.pwHash){
+    const inputHash=await hashPassword(pw);
+    if(inputHash!==found.pwHash){if(hint){hint.textContent='Wrong password. Try again.';hint.className='cf-hint err';}console.warn('[cafe] wrong password for:',username);return;}
+  }
+  const su=Object.assign({},found);delete su.pwHash;
+  cfCurrentUser=su;cfSaveLocal(su);
+  if(hint)hint.textContent='';
+  console.log('[cafe] login OK:',username);
+  cfEnterDonate();
+}
+
+/* ── ENTER DONATE ── */
+function cfEnterDonate(){
+  if(!cfCurrentUser){console.warn('[cafe] no user');return;}
+  const u=cfCurrentUser,isAd=u.username===ADMIN_USER;
+  const av=document.getElementById('cfUserBarAv'),init=document.getElementById('cfUserBarInit');
+  if(u.avatarB64){if(av){av.src=u.avatarB64;av.style.display='block';}if(init)init.style.display='none';}
+  else{if(av)av.style.display='none';if(init){init.style.display='flex';init.textContent=(u.displayName||u.username).slice(0,2).toUpperCase();}}
+  const nameEl=document.getElementById('cfUserBarName');
+  if(nameEl){nameEl.innerHTML=cfStyledName(u.displayName||u.username,u.uid,'normal',true);nameEl.className='cf-user-bar-name';}
+  const urlEl=document.getElementById('cfUserBarUrl');if(urlEl)urlEl.innerHTML=SITE_DOMAIN+'/'+u.username+'<span class="cf-coins-mini"><i class="fa-solid fa-coins"></i> '+(u.coins||0)+'</span>'+(u.profileStyle===3?'<span class="cf-member-mini" style="margin-left:4px"><span class="cf-mm-check">V</span>Member</span>':'');
+  const donateWof=document.getElementById('cfDonateWofSection');if(donateWof)donateWof.classList.add('cf-hidden');
+  /* Welcome bar */
+  var welBar=document.getElementById('cfWelcomeBar');
+  var welName=document.getElementById('cfWelcomeName');
+  if(welBar)welBar.style.display='block';
+  if(welName)welName.innerHTML=cfStyledName(u.displayName||u.username,u.uid,'normal',false);
+  cfGoStep('donate');cfInitCups();cfLoadWof();cfStartPolling();
+}
+
+/* ── LOGOUT ── */
+function cfLogout(){
+  sfxClick();cfStopPolling();cfCurrentUser=null;
+  try{localStorage.removeItem('cfSession');}catch(e){}
+  cfGoStep('landing');cfUpdateLandingState();cfLoadWof();
+}
+
+/* ── EDIT PROFILE ── */
+function cfOpenEdit(){
+  sfxClick();var u=cfCurrentUser;if(!u)return;
+  var remaining=cfCheckCd(u.uid,'edit');
+  if(remaining>0){cfShowToast('Edit info cooldown: '+cfFormatTimeLeft(remaining));return;}
+  var ni=document.getElementById('cfEditNameInput');if(ni)ni.value=u.displayName||u.username;
+  var img=document.getElementById('cfEditAvatarImg'),ph=document.getElementById('cfEditAvatarPh');
+  if(u.avatarB64){if(img){img.src=u.avatarB64;img.style.display='block';}if(ph)ph.style.display='none';}
+  else{if(img)img.style.display='none';if(ph)ph.style.display='flex';}
+  cfAvatarB64='';
+  document.getElementById('cfEditModal').classList.add('show');document.body.style.overflow='hidden';
+}
+/* ── OPEN / CLOSE CHANGE PASSWORD MODAL ── */
+function cfOpenPwModal(){
+  sfxClick();var u=cfCurrentUser;if(!u)return;
+  var remaining=cfCheckCd(u.uid,'pw');
+  if(remaining>0){cfShowToast('Change password cooldown: '+cfFormatTimeLeft(remaining));return;}
+  ['cfPwCurrentInput','cfPwNewInput','cfPwConfirmInput'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var h=document.getElementById('cfPwHint');if(h){h.textContent='';h.className='cf-hint';}
+  document.getElementById('cfPwModal').classList.add('show');document.body.style.overflow='hidden';
+}
+function cfClosePwModal(){
+  sfxClick();
+  var modal=document.getElementById('cfPwModal');
+  if(modal){modal.classList.remove('show');document.body.style.overflow='';}
+}
+function cfCloseEdit(){sfxClick();document.getElementById('cfEditModal').classList.remove('show');document.body.style.overflow='';}
+async function cfSaveEdit(){
+  sfxClick();var btn=document.getElementById('cfEditSaveBtn');
+  var remaining=cfCheckCd(cfCurrentUser.uid,'edit');
+  if(remaining>0){cfShowToast('Cooldown: '+cfFormatTimeLeft(remaining));return;}
+  if(btn){btn.disabled=true;btn.innerHTML='Saving...';}
+  var newName=((document.getElementById('cfEditNameInput').value||'').trim()||cfCurrentUser.username).slice(0,30);
+  var db=cfDbCache||await fbRead();
+  var newAvatar=cfAvatarB64||cfCurrentUser.avatarB64;
+  var update={displayName:newName,avatarB64:newAvatar};
+  db.users=(db.users||[]).map(function(u){return u.uid===cfCurrentUser.uid?Object.assign({},u,update):u;});
+  db.donations=(db.donations||[]).map(function(d){return d.uid===cfCurrentUser.uid?Object.assign({},d,{displayName:newName,avatarB64:newAvatar}):d;});
+  var saved=await fbWrite(db);
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Save Changes';}
+  if(saved){
+    cfDbCache=db;cfSetCdTime(cfCurrentUser.uid,'edit');
+    cfCurrentUser=Object.assign({},cfCurrentUser,{displayName:newName,avatarB64:newAvatar});
+    cfSaveLocal(cfCurrentUser);cfAvatarB64='';
+    cfRefreshAllUserUI(cfCurrentUser);
+    var _dwof=document.getElementById('cfDonateWofSection');if(_dwof)_dwof.classList.remove('cf-hidden');
+    cfShowToast('Profile updated!');
+  }else cfShowToast('Failed to save.');
+  cfCloseEdit();
+}
+
+/* ── SAVE PASSWORD (independent) ── */
+async function cfSavePw(){
+  sfxClick();var btn=document.getElementById('cfPwSaveBtn');
+  var remaining=cfCheckCd(cfCurrentUser.uid,'pw');
+  if(remaining>0){cfShowToast('Cooldown: '+cfFormatTimeLeft(remaining));return;}
+  var curPw=((document.getElementById('cfPwCurrentInput')||{}).value||'');
+  var newPw=((document.getElementById('cfPwNewInput')||{}).value||'');
+  var confPw=((document.getElementById('cfPwConfirmInput')||{}).value||'');
+  var hint=document.getElementById('cfPwHint');
+  if(!curPw){if(hint){hint.textContent='Enter your current password';hint.className='cf-hint err';}return;}
+  if(!newPw||newPw.length<6){if(hint){hint.textContent='New password must be at least 6 characters';hint.className='cf-hint err';}return;}
+  if(newPw!==confPw){if(hint){hint.textContent='Passwords do not match';hint.className='cf-hint err';}return;}
+  if(hint)hint.textContent='';
+  if(btn){btn.disabled=true;btn.innerHTML='Updating...';}
+  var db=cfDbCache||await fbRead();
+  var curUser=(db.users||[]).find(function(u){return u.uid===cfCurrentUser.uid;});
+  if(!curUser){if(hint){hint.textContent='User not found';hint.className='cf-hint err';}if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Update Password';}return;}
+  var curHash=await hashPassword(curPw);
+  if(curHash!==curUser.pwHash){if(hint){hint.textContent='Current password is incorrect';hint.className='cf-hint err';}if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Update Password';}return;}
+  var newHash=await hashPassword(newPw);
+  db.users=(db.users||[]).map(function(u){return u.uid===cfCurrentUser.uid?Object.assign({},u,{pwHash:newHash}):u;});
+  var saved=await fbWrite(db);
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Update Password';}
+  if(saved){cfDbCache=db;cfSetCdTime(cfCurrentUser.uid,'pw');cfShowToast('Password updated!');}
+  else cfShowToast('Failed to update password.');
+  cfClosePwModal();
+}
+
+
+/* ── AMOUNT ── */
+function selectAmt(el,val){
+  sfxClick();document.querySelectorAll('.caffe-amt').forEach(function(b){b.classList.remove('selected');});
+  if(el)el.classList.add('selected');caffeSelectedAmt=val;
+  const ci=document.getElementById('caffeCustomAmt');if(ci)ci.value='';
+}
+function onCustomAmt(el){document.querySelectorAll('.caffe-amt').forEach(function(b){b.classList.remove('selected');});caffeSelectedAmt=el.value||'';}
+
+/* ── QR MODAL ── */
+function openCaffeQR(){
+  sfxClick();if(!cfCurrentUser){cfShowToast('Create your page first!');return;}
+  const custom=(document.getElementById('caffeCustomAmt').value||'');
+  let amt;
+  if(custom&&parseFloat(custom)>0)amt=parseFloat(custom).toFixed(2);
+  else if(caffeSelectedAmt&&parseFloat(caffeSelectedAmt)>0)amt=parseFloat(caffeSelectedAmt).toFixed(2);
+  else{amt='1.00';caffeSelectedAmt='1';}
+  cfPendingPaid={amount:amt,msg:((document.getElementById('caffeMsg').value||'').trim())};
+  _cfMarkPaidLock=false;
+  _cfQrToken='qr_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+  /* Reset button state for fresh session */
+  var _mpb=document.getElementById('markPaidBtn');
+  if(_mpb){_mpb.disabled=false;_mpb.innerHTML='<i class="fa-solid fa-check-circle"></i> Add to Cafe List';}
+  console.log('[cafe] QR pending:',cfPendingPaid);
+  const qa=document.getElementById('qrAmountText'),qs=document.getElementById('qrSheetSub'),qma=document.getElementById('qrMsgAmount');
+  if(qa)qa.textContent='$'+amt;
+  if(qma)qma.textContent='$'+amt;
+  if(qs)qs.textContent=cfPendingPaid.msg?'"'+cfPendingPaid.msg.slice(0,60)+'"':'Your support means everything';
+  document.getElementById('caffeQrOverlay').classList.add('show');document.body.style.overflow='hidden';
+  const sheet=document.getElementById('caffeQrSheet');
+  if(sheet&&typeof gsap!=='undefined'){
+    const targets=sheet.querySelectorAll('.qr-sheet-title,.qr-sheet-sub,.qr-img-wrap,.qr-amount-chip,#markPaidBtn,.qr-close-btn');
+    if(targets.length)gsap.fromTo(targets,{opacity:0,y:18},{opacity:1,y:0,stagger:.05,duration:.5,ease:'power3.out',delay:.15});
+  }
+}
+function closeCaffeQR(){
+  sfxClick();
+  const overlay=document.getElementById('caffeQrOverlay'),sheet=document.getElementById('caffeQrSheet');
+  /* Reset success screen + lock + token */
+  _cfMarkPaidLock=false;_cfQrToken=null;
+  var ss=document.getElementById('qrSuccessScreen');
+  if(ss)ss.classList.remove('show');
+  if(sheet){Array.from(sheet.children).forEach(function(c){c.style.display='';});}
+  if(sheet&&typeof gsap!=='undefined'){
+    gsap.to(sheet,{y:60,opacity:0,duration:.3,ease:'power2.in',onComplete:function(){
+      if(overlay)overlay.classList.remove('show');document.body.style.overflow='';
+      if(sheet)gsap.set(sheet,{y:0,opacity:1});
+    }});
+  }else{if(overlay)overlay.classList.remove('show');document.body.style.overflow='';}
+}
+function handleOverlayClick(e){if(e.target===e.currentTarget)closeCaffeQR();}
+
+/* ── I'VE PAID ── */
+var _cfMarkPaidLock=false,_cfQrToken=null,_cfUsedTokens={};
+async function cfMarkPaid(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  /* Quad guard: token + lock + pendingPaid + btn.disabled */
+  if(!_cfQrToken||_cfUsedTokens[_cfQrToken]){console.warn('[cafe] duplicate blocked by token');return;}
+  if(_cfMarkPaidLock){console.warn('[cafe] duplicate blocked by lock');return;}
+  if(!cfCurrentUser){cfShowToast('Please log in first');return;}
+  if(!cfPendingPaid){cfShowToast('Please generate QR first');return;}
+  const btn=document.getElementById('markPaidBtn');
+  if(btn&&btn.disabled){console.warn('[cafe] duplicate blocked by btn.disabled');return;}
+  /* Consume token + set lock ATOMICALLY */
+  _cfUsedTokens[_cfQrToken]=true;
+  _cfMarkPaidLock=true;
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving...';}
+  const _pending=cfPendingPaid;cfPendingPaid=null;
+  sfxClick();
+  const u=cfCurrentUser;
+  const entry={id:'don_'+Date.now(),uid:u.uid,username:u.username,displayName:u.displayName||u.username,avatarB64:u.avatarB64||'',amount:_pending.amount,message:_pending.msg||'',timestamp:new Date().toISOString(),coffeeCount:(u.coffeeCount||0)+1,adminReply:''};
+  console.log('[cafe] saving donation $'+entry.amount+' by '+u.username+' [lock=true]');
+  const db=await fbRead();cfDbCache=db;
+  db.donations=[entry].concat(db.donations||[]);
+  db.users=(db.users||[]).map(function(u2){return u2.uid===u.uid?Object.assign({},u2,{coffeeCount:entry.coffeeCount}):u2;});
+  const ok=await fbWrite(db);
+  if(btn){btn.disabled=false;btn.innerHTML="I've Paid — Add to Wall";}
+  if(ok){
+    console.log('[cafe] donation saved!');
+    cfDbCache=db;cfCurrentUser=Object.assign({},cfCurrentUser,{coffeeCount:entry.coffeeCount});cfSaveLocal(cfCurrentUser);
+    wofDonors=[entry].concat(wofDonors);cfPendingPaid=null;
+    const msgArea=document.getElementById('caffeMsg');if(msgArea)msgArea.value='';
+    document.querySelectorAll('.caffe-amt').forEach(function(b,i){i===0?b.classList.add('selected'):b.classList.remove('selected');});
+    caffeSelectedAmt='1';const ci=document.getElementById('caffeCustomAmt');if(ci)ci.value='';
+    setTimeout(function(){cfRenderWof();},400);
+    /* Show success screen with real avatar */
+    var _qrMain=document.getElementById('caffeQrSheet');
+    var _qrSS=document.getElementById('qrSuccessScreen');
+    var _qrSA=document.getElementById('qrSuccessAmt');
+    var _qrAv=document.getElementById('qrReplyAv');
+    if(_qrSA)_qrSA.textContent='$'+entry.amount;
+    /* Inject admin avatar from site config */
+    if(_qrAv){
+      var _adminUser=cfDbCache&&cfDbCache.users&&cfDbCache.users.find(function(x){return x.username===ADMIN_USER;});
+      if(_adminUser&&_adminUser.avatarB64){
+        _qrAv.innerHTML='<img src="'+_adminUser.avatarB64+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">';
+      } else {
+        _qrAv.innerHTML='<i class="fa-solid fa-mug-hot"></i>';
+      }
+    }
+    if(_qrMain){Array.from(_qrMain.children).forEach(function(c){if(c.id!=='qrSuccessScreen')c.style.display='none';});}
+    if(_qrSS)_qrSS.classList.add('show');
+    if(_qrMain)_qrMain.scrollTop=0;
+  }else{
+    console.error('[cafe] donation save FAILED');cfShowToast('Save failed. Check connection.');_cfMarkPaidLock=false;if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check-circle"></i> Add to Cafe List';}
+  }
+}
+
+/* ── ADMIN DELETE DONATION ── */
+function cfDeleteDonation(donId){
+  if(!cfCurrentUser||cfCurrentUser.username!==ADMIN_USER)return;
+  if(!confirm('Delete this message permanently?'))return;
+  (async function(){
+    var db=cfDbCache||await fbRead();
+    db.donations=(db.donations||[]).filter(function(d){return d.id!==donId;});
+    var ok=await fbWrite(db);
+    if(ok){cfDbCache=db;wofDonors=wofDonors.filter(function(d){return d.id!==donId;});cfRenderWof();cfShowToast('Message deleted');}
+    else cfShowToast('Failed to delete');
+  })();
+}
+
+/* ── ADMIN REPLY ── */
+function cfToggleReplyInput(donId){
+  if(!cfCurrentUser||cfCurrentUser.username!==ADMIN_USER)return;
+  const wrap=document.getElementById('reply-wrap-'+donId);if(wrap)wrap.classList.toggle('open');
+}
+async function cfSendReply(donId){
+  const input=document.getElementById('reply-input-'+donId);if(!input)return;
+  const text=input.value.trim();if(!text)return;
+  const btn=document.getElementById('reply-send-'+donId);
+  if(btn){btn.disabled=true;btn.textContent='...';}
+  const db=cfDbCache||await fbRead();
+  db.donations=(db.donations||[]).map(function(d){return d.id===donId?Object.assign({},d,{adminReply:text,adminReplyAt:new Date().toISOString()}):d;});
+  const ok=await fbWrite(db);cfDbCache=db;
+  if(btn){btn.disabled=false;btn.textContent='Send';}
+  if(ok){wofDonors=wofDonors.map(function(d){return d.id===donId?Object.assign({},d,{adminReply:text}):d;});cfRenderWof();cfShowToast('Reply sent!');}
+  else cfShowToast('Failed to send reply.');
+}
+
+/* ── WALL OF FAME ── */
+async function cfLoadWof(){
+const sk=document.getElementById('wofSkeleton');if(sk)sk.style.display='flex';
+const db=await fbRead();
+if(!db){cfRenderWof();return;}
+cfDbCache=db;
+wofDonors=(db.donations||[]).sort(function(a,b){return new Date(b.timestamp)-new Date(a.timestamp);});
+cfRenderWof();
+}
+function cfRenderWof(){
+const sk=document.getElementById('wofSkeleton');if(sk)sk.style.display='none';
+const count=wofDonors.length,str=count+' supporter'+(count!==1?'s':'');
+['wofCount','wofCount2'].forEach(function(id){const el=document.getElementById(id);if(el)el.textContent=str;});
+const isAdmin=cfCurrentUser&&cfCurrentUser.username===ADMIN_USER;
+let htm=count===0
+?'<div class="wof-empty"><div class="wof-empty-icon">'+cfCupSVG('lg','#00f5ff','#b44fff',true)+'</div><h4>Be the first supporter!</h4><p>No one has donated yet.</p></div>'
+:wofDonors.map(function(d,i){return wofCardHTML(d,isAdmin,i);}).join('');
+['wofFeed','wofFeed2'].forEach(function(id){const el=document.getElementById(id);if(el)el.innerHTML=htm;});
+const cards=document.querySelectorAll('.wof-card');
+if(cards.length&&typeof gsap!=='undefined')gsap.fromTo(cards,{opacity:0,y:20,scale:.97},{opacity:1,y:0,scale:1,stagger:.07,duration:.5,ease:'power3.out'});
+}
+function escapeHtml(str){if(!str)return '';return str.replace(/[&<>"']/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);});}
+function cfTimeAgo(iso){
+const diff=Date.now()-new Date(iso).getTime(),m=Math.floor(diff/60000);
+if(m<1)return 'just now';if(m<60)return m+'m ago';
+const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';
+}
+function wofCardHTML(d,isAdmin,idx){
+var _th=0;for(var _ci=0;_ci<(d.uid||'').length;_ci++)_th+=d.uid.charCodeAt(_ci);
+var _tc=['#00f5ff','#b44fff','#ffd700','#39ff9a','#ff6b9d','#ff6b35','#7eb2ff'][_th%7];
+
+const init=(d.displayName||d.username).slice(0,2).toUpperCase();
+const avHtml=d.avatarB64
+?'<img class="wof-avatar" src="'+d.avatarB64+'" alt="'+escapeHtml(d.username)+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="wof-avatar-placeholder" style="display:none">'+init+'</div>'
+:'<div class="wof-avatar-placeholder">'+init+'</div>';
+const cupBadge='<span class="wof-amt-badge"><span class="wof-coffee-icon">'+cfCupSVG('sm',_tc,'#fff',false)+'</span>$'+d.amount+'</span>';
+const msgHtml=d.message?'<div class="wof-msg-bubble">'+escapeHtml(d.message)+'</div>':'';
+const _adminStyleCls=(function(){if(!cfDbCache||!cfDbCache.users)return '';var _au=cfDbCache.users.find(function(x){return x.username===ADMIN_USER;});return _au&&_au.profileStyle?' cf-name-s'+_au.profileStyle:'';})();
+const replyDisplay=d.adminReply?'<div class="wof-reply"><div class="wof-reply-body"><div class="wof-reply-name"><span class="cf-styled-name cf-sn-sm'+_adminStyleCls+'">@'+ADMIN_USER+'</span> <span class="wof-reply-badge">Owner</span></div><div class="wof-reply-text">'+escapeHtml(d.adminReply)+'</div></div></div>':'';
+const replyInput=isAdmin?'<div class="wof-reply-btn" onclick="cfToggleReplyInput(\''+d.id+'\')">Reply</span><span class=\"wof-del-btn\" onclick=\"event.stopPropagation();cfDeleteDonation(\''+d.id+'\')\">Delete</span></div><div class="wof-reply-input-wrap" id="reply-wrap-'+d.id+'"><textarea class="wof-reply-input" id="reply-input-'+d.id+'" placeholder="Write reply...">'+escapeHtml(d.adminReply||'')+'</textarea><button class="wof-reply-send" id="reply-send-'+d.id+'" onclick="cfSendReply(\''+d.id+'\')">Send</button></div>':'';
+const dataStr=encodeURIComponent(JSON.stringify({username:d.username,displayName:d.displayName||d.username,avatarB64:d.avatarB64||'',amount:d.amount,coffeeCount:d.coffeeCount||1,timestamp:d.timestamp}));
+return '<div class="wof-card" style=\"--wt-c:'+ _tc +'\"" onclick="cfCardClick(event,\''+dataStr+'\')">'+avHtml+'<div class="wof-body"><div class="wof-meta"><span class="wof-username'+cfGetStyleClass(d.uid)+'">@'+escapeHtml(d.displayName||d.username)+'</span><div class="wof-verified"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="vbg" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#6688ff"/><stop offset="100%" stop-color="#1133cc"/></radialGradient><linearGradient id="vshine" x1="0%" y1="0%" x2="60%" y2="100%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><path d="M50 5 Q55 1 59 7 Q63 2 68 6 Q70 0 76 5 Q76 -1 82 4 Q80 -2 86 4 Q82 -2 88 4 Q82 3 85 10 Q90 6 91 13 Q97 11 96 18 Q102 18 99 24 Q105 26 100 31 Q106 35 99 38 Q105 43 97 45 Q102 51 94 51 Q99 58 91 57 Q94 64 86 62 Q87 69 79 67 Q78 74 71 68 Q68 76 62 70 Q57 77 50 71 Q43 77 38 70 Q32 76 29 68 Q21 74 22 67 Q14 69 16 62 Q8 63 11 57 Q3 57 8 51 Q0 51 5 45 Q-3 43 3 38 Q-2 35 4 31 Q-1 26 5 24 Q2 18 8 18 Q7 11 13 13 Q12 6 18 10 Q17 4 23 5 Q21 -2 27 4 Q27 -2 32 4 Q30 -2 36 3 Q38 -2 44 3 Q44 -2 50 5Z" fill="url(#vbg)"/><path d="M50 5 Q55 1 59 7 Q63 2 68 6 Q70 0 76 5 Q76 -1 82 4 Q80 -2 86 4 Q82 -2 88 4 Q82 3 85 10 Q90 6 91 13 Q97 11 96 18 Q98 22 97 26" fill="url(#vshine)" opacity="0.5"/><polyline points="33,51 45,64 68,38" stroke="white" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>'+cupBadge+(cfIsMember(d.uid)?'<span class="cf-member-mini"><span class="cf-mm-check">V</span>Member</span>':'')+'</div><div class="wof-url">'+SITE_DOMAIN+'/'+escapeHtml(d.username)+'</div>'+msgHtml+replyDisplay+replyInput+'<div class="wof-time">'+cfTimeAgo(d.timestamp)+'</div></div></div>';
+}
+function cfCardClick(e,dataStr){
+if(e.target.closest&&e.target.closest('.wof-reply-btn,.wof-reply-input-wrap,.wof-reply-send,.wof-reply-input'))return;
+cfOpenProfile(dataStr);
+}
+
+/* ── PROFILE MODAL ── */
+function cfOpenProfile(dataStr){
+  sfxClick();
+  try{
+    const d=JSON.parse(decodeURIComponent(dataStr));
+    const av=document.getElementById('cfPsAvatar'),init=document.getElementById('cfPsAvInit');
+    if(d.avatarB64){if(av){av.src=d.avatarB64;av.style.display='block';}if(init)init.style.display='none';}
+    else{if(av)av.style.display='none';if(init){init.style.display='flex';init.textContent=(d.displayName||d.username).slice(0,2).toUpperCase();}}
+    const nameEl=document.getElementById('cfPsName'),urlEl=document.getElementById('cfPsUrl');
+    const ce=document.getElementById('cfPsCoffees'),je=document.getElementById('cfPsJoined');
+    if(nameEl){
+      /* Apply the user's selected style to profile name */
+      var _pStyle='';
+      if(cfDbCache&&cfDbCache.users){var _pu2=cfDbCache.users.find(function(x){return x.username===d.username;});if(_pu2&&_pu2.profileStyle)_pStyle=' cf-name-s'+_pu2.profileStyle;}
+      nameEl.innerHTML='<span class="cf-styled-name cf-sn-lg'+_pStyle+'">'+escapeHtml(d.displayName||d.username)+'</span>';
+    }
+    if(urlEl)urlEl.textContent=SITE_DOMAIN+'/'+d.username;
+    if(ce)ce.textContent=d.coffeeCount||1;
+    if(je)je.textContent=new Date(d.timestamp).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    /* Member badge */
+    var _psMemBadge=document.getElementById('cfPsMemberBadge');
+    if(_psMemBadge){
+      var _isMem=false;
+      if(cfDbCache&&cfDbCache.users){var _pu=cfDbCache.users.find(function(x){return x.username===d.username;});if(_pu&&_pu.profileStyle===3)_isMem=true;}
+      if(_isMem){_psMemBadge.innerHTML='<div class="cf-member-badge"><span class="cf-mbadge-check">V</span> Member of cafe.jude</div>';_psMemBadge.style.display='block';}
+      else{_psMemBadge.style.display='none';}
+    }
+    document.getElementById('cfProfileModal').classList.add('show');document.body.style.overflow='hidden';
+    const sheet=document.getElementById('cfProfileSheet');
+    if(sheet&&sheet.children.length&&typeof gsap!=='undefined')gsap.fromTo(Array.from(sheet.children),{opacity:0,y:16},{opacity:1,y:0,stagger:.05,duration:.4,ease:'power3.out',delay:.12});
+  }catch(e){console.error('[cafe] cfOpenProfile:',e);}
+}
+function cfCloseProfileModal(e){if(e&&e.target===e.currentTarget)cfCloseProfileModalBtn();}
+function cfCloseProfileModalBtn(){
+  sfxClick();const sheet=document.getElementById('cfProfileSheet'),modal=document.getElementById('cfProfileModal');
+  if(sheet&&typeof gsap!=='undefined'){gsap.to(sheet,{y:60,opacity:0,duration:.28,ease:'power2.in',onComplete:function(){if(modal)modal.classList.remove('show');document.body.style.overflow='';if(sheet)gsap.set(sheet,{y:0,opacity:1});}});}
+  else{if(modal)modal.classList.remove('show');document.body.style.overflow='';}
+}
+
+/* ── REALTIME LISTENER (replaces polling) ── */
+async function cfStartPolling(){
+  cfStopPolling();
+  try{
+    const{doc,onSnapshot}=await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js');
+    const db=window._cfFirestore;
+    cfUnsubscribe=onSnapshot(doc(db,'cafe','data'),function(snap){
+      if(!snap.exists())return;
+      const d=snap.data();
+      const nd=(Array.isArray(d.donations)?d.donations:[]).sort(function(a,b){return new Date(b.timestamp)-new Date(a.timestamp);});
+      cfDbCache={users:Array.isArray(d.users)?d.users:[],donations:nd};
+      /* Real-time user sync (covers cross-device profile updates) */
+      if(cfCurrentUser){
+        var freshU=(cfDbCache.users||[]).find(function(u){return u.uid===cfCurrentUser.uid;});
+        if(freshU){
+          var sf=Object.assign({},freshU);delete sf.pwHash;
+          var userChanged=sf.displayName!==cfCurrentUser.displayName||sf.avatarB64!==cfCurrentUser.avatarB64||sf.profileStyle!==cfCurrentUser.profileStyle||sf.coins!==cfCurrentUser.coins;
+          cfCurrentUser=sf;cfSaveLocal(sf);
+          if(userChanged)cfRefreshAllUserUI(sf);
+        }
+      }
+      /* Always re-render WoF to pick up style/membership changes */
+      wofDonors=nd;cfRenderWof();
+    },function(e){console.warn('[cafe] listener error:',e.message);});
+  }catch(e){console.warn('[cafe] cfStartPolling FAILED:',e.message);}
+}
+function cfStopPolling(){if(cfUnsubscribe){cfUnsubscribe();cfUnsubscribe=null;}}
+
+/* ── BACK TO HOME / LANDING STATE ── */
+function cfGoHome(){
+  sfxClick();
+  cfGoStep('landing');
+  cfUpdateLandingState();
+}
+function cfUpdateLandingState(){
+  var bar=document.getElementById('cfLandingUserBar');
+  var card=document.querySelector('#cf-step-landing .cf-auth-card');
+  if(cfCurrentUser){
+    var avEl=document.getElementById('cfLubAv'),nameEl=document.getElementById('cfLubName');
+    if(nameEl)nameEl.innerHTML=cfStyledName(cfCurrentUser.displayName||cfCurrentUser.username,cfCurrentUser.uid,'normal',true);
+    if(avEl){
+      if(cfCurrentUser.avatarB64){avEl.innerHTML='<img src="'+cfCurrentUser.avatarB64+'" alt="">';}
+      else{avEl.textContent=(cfCurrentUser.displayName||cfCurrentUser.username).slice(0,2).toUpperCase();}
+    }
+    if(bar)bar.classList.add('show');
+    if(card)card.style.display='none';
+  }else{
+    if(bar)bar.classList.remove('show');
+    if(card)card.style.display='';
+  }
+}
+
+/* ── CENTRALIZED PROFILE UI REFRESH ── */
+/* querySelectorAll-based: updates every element that displays user data */
+function cfRefreshAllUserUI(u){
+  if(!u)return;
+  var name=u.displayName||u.username;
+  var avatar=u.avatarB64||'';
+  var initials=name.slice(0,2).toUpperCase();
+  var isAd=u.username===ADMIN_USER;
+
+  /* 1 ─ Donate-step user bar */
+  var barAv=document.getElementById('cfUserBarAv');
+  var barInit=document.getElementById('cfUserBarInit');
+  if(avatar){if(barAv){barAv.src=avatar;barAv.style.display='block';}if(barInit)barInit.style.display='none';}
+  else{if(barAv)barAv.style.display='none';if(barInit){barInit.style.display='flex';barInit.textContent=initials;}}
+  var barName=document.getElementById('cfUserBarName');
+  if(barName){barName.innerHTML=cfStyledName(name,u.uid,'normal',true);barName.className='cf-user-bar-name';}
+  var barUrl=document.getElementById('cfUserBarUrl');
+  if(barUrl)barUrl.innerHTML=SITE_DOMAIN+'/'+u.username+'<span class="cf-coins-mini"><i class="fa-solid fa-coins"></i> '+(u.coins||0)+'</span>'+(u.profileStyle===3?'<span class="cf-member-mini" style="margin-left:4px"><span class="cf-mm-check">V</span>Member</span>':'');
+
+  /* 2 ─ Landing page user bar */
+  var lubAv=document.getElementById('cfLubAv');
+  var lubName=document.getElementById('cfLubName');
+  if(lubAv){if(avatar)lubAv.innerHTML='<img src="'+avatar+'" alt="">';else lubAv.textContent=initials;}
+  if(lubName)lubName.innerHTML=cfStyledName(name,u.uid,'normal',true);
+
+  /* 3 ─ Wof avatar elements: patch in-memory donor data + re-render */
+  var wofUpdated=false;
+  wofDonors=wofDonors.map(function(d){
+    if(d.uid===u.uid&&(d.displayName!==name||d.avatarB64!==avatar)){
+      wofUpdated=true;
+      return Object.assign({},d,{displayName:name,avatarB64:avatar});
+    }
+    return d;
+  });
+  if(wofUpdated)cfRenderWof();
+
+  /* 4 ─ Settings panel + welcome bar */
+  var setAv=document.getElementById('cfSetAv'),setInit=document.getElementById('cfSetAvInit');
+  if(setAv&&avatar){setAv.src=avatar;setAv.style.display='block';if(setInit)setInit.style.display='none';}
+  else if(setInit){if(setAv)setAv.style.display='none';setInit.style.display='flex';setInit.textContent=initials;}
+  var setName=document.getElementById('cfSetName');if(setName)setName.innerHTML=cfStyledName(name,u.uid,'normal',true);
+  var welName=document.getElementById('cfWelcomeName');if(welName)welName.innerHTML=cfStyledName(name,u.uid,'normal',false);
+  /* 4b ─ Settings URL with member badge */
+  var setUrl=document.getElementById('cfSetUrl');
+  if(setUrl)setUrl.innerHTML=SITE_DOMAIN+'/'+u.username+'<span class="cf-coins-mini"><i class="fa-solid fa-coins"></i> '+(u.coins||0)+'</span>'+(u.profileStyle===3?'<span class="cf-member-mini" style="margin-left:4px"><span class="cf-mm-check">V</span>Member</span>':'');
+  /* 5 ─ Keep cfDbCache.donations in sync (prevents stale data on next write) */
+  if(cfDbCache&&cfDbCache.donations){
+    cfDbCache.donations=cfDbCache.donations.map(function(d){
+      return d.uid===u.uid?Object.assign({},d,{displayName:name,avatarB64:avatar}):d;
+    });
+  }
+}
+
+
+/* ── SETTINGS PANEL ── */
+var _cdInterval=null;
+function cfOpenSettings(){
+  sfxClick();var u=cfCurrentUser;if(!u)return;
+  var av=document.getElementById('cfSetAv'),init=document.getElementById('cfSetAvInit');
+  var nameEl=document.getElementById('cfSetName'),urlEl=document.getElementById('cfSetUrl');
+  if(u.avatarB64){if(av){av.src=u.avatarB64;av.style.display='block';}if(init)init.style.display='none';}
+  else{if(av)av.style.display='none';if(init){init.style.display='flex';init.textContent=(u.displayName||u.username).slice(0,2).toUpperCase();}}
+  if(nameEl)nameEl.innerHTML=cfStyledName(u.displayName||u.username,u.uid,'normal',true);
+  if(urlEl)urlEl.innerHTML=SITE_DOMAIN+'/'+u.username+'<span class="cf-coins-mini"><i class="fa-solid fa-coins"></i> '+(u.coins||0)+'</span>'+(u.profileStyle===3?'<span class="cf-member-mini" style="margin-left:4px"><span class="cf-mm-check">V</span>Member</span>':'');
+  /* Show gift button for admin only */
+  var giftBtn=document.getElementById('cfSetGiftBtn');
+  if(giftBtn)giftBtn.style.display=(u.username===ADMIN_USER)?'flex':'none';
+  /* Update cooldown states */
+  cfUpdateSettingsCooldowns();
+  if(_cdInterval)clearInterval(_cdInterval);
+  _cdInterval=setInterval(cfUpdateSettingsCooldowns,1000);
+  document.getElementById('cfSettingsModal').classList.add('show');document.body.style.overflow='hidden';
+  var sheet=document.getElementById('cfSettingsSheet');
+  if(sheet&&sheet.children.length&&typeof gsap!=='undefined')gsap.fromTo(Array.from(sheet.children),{opacity:0,y:16},{opacity:1,y:0,stagger:.04,duration:.35,ease:'power3.out',delay:.1});
+}
+function cfUpdateSettingsCooldowns(){
+  if(!cfCurrentUser)return;
+  var uid=cfCurrentUser.uid;
+  /* Edit Info cooldown (independent) */
+  var editR=cfCheckCd(uid,'edit');
+  var editBtn=document.getElementById('cfSetEditBtn');
+  var editCd=document.getElementById('cfSetEditCd');
+  var editCdTxt=document.getElementById('cfSetEditCdText');
+  if(editR>0){
+    if(editBtn)editBtn.classList.add('cf-disabled');
+    if(editCd)editCd.classList.add('show');
+    if(editCdTxt)editCdTxt.textContent='Available in '+cfFormatTimeLeft(editR);
+  }else{
+    if(editBtn)editBtn.classList.remove('cf-disabled');
+    if(editCd)editCd.classList.remove('show');
+  }
+  /* Change Password cooldown (independent) */
+  var pwR=cfCheckCd(uid,'pw');
+  var pwBtn=document.getElementById('cfSetPwBtn');
+  var pwCd=document.getElementById('cfSetPwCd');
+  var pwCdTxt=document.getElementById('cfSetPwCdText');
+  if(pwR>0){
+    if(pwBtn)pwBtn.classList.add('cf-disabled');
+    if(pwCd)pwCd.classList.add('show');
+    if(pwCdTxt)pwCdTxt.textContent='Available in '+cfFormatTimeLeft(pwR);
+  }else{
+    if(pwBtn)pwBtn.classList.remove('cf-disabled');
+    if(pwCd)pwCd.classList.remove('show');
+  }
+  /* Stop interval if both are done */
+  if(editR<=0&&pwR<=0&&_cdInterval){clearInterval(_cdInterval);_cdInterval=null;}
+}
+function cfCloseSettings(){
+  if(_cdInterval){clearInterval(_cdInterval);_cdInterval=null;}
+  sfxClick();var sheet=document.getElementById('cfSettingsSheet'),modal=document.getElementById('cfSettingsModal');
+  if(sheet&&typeof gsap!=='undefined'){gsap.to(sheet,{y:60,opacity:0,duration:.28,ease:'power2.in',onComplete:function(){if(modal)modal.classList.remove('show');document.body.style.overflow='';if(sheet)gsap.set(sheet,{y:0,opacity:1});}});}
+  else{if(modal)modal.classList.remove('show');document.body.style.overflow='';}
+}
+function cfSettingsEditProfile(){
+  var r=cfCheckCd(cfCurrentUser.uid,'edit');
+  if(r>0){cfShowToast('Edit info: '+cfFormatTimeLeft(r)+' remaining');return;}
+  cfCloseSettings();setTimeout(cfOpenEdit,300);
+}
+function cfSettingsChangePw(){
+  var r=cfCheckCd(cfCurrentUser.uid,'pw');
+  if(r>0){cfShowToast('Change password: '+cfFormatTimeLeft(r)+' remaining');return;}
+  cfCloseSettings();setTimeout(cfOpenPwModal,300);
+}
+function cfSettingsLogout(){cfCloseSettings();setTimeout(cfLogout,200);}
+
+
+/* ── LEGAL MODALS ── */
+
+/* ── LEGAL SWIPE-TO-CLOSE ── */
+function cfInitLegalSwipe(modalId){
+  var modal=document.getElementById(modalId);if(!modal)return;
+  var sheet=modal.querySelector('.cf-legal-sheet');
+  var bar=sheet?sheet.querySelector('.qr-sheet-bar'):null;
+  if(!bar||!sheet)return;
+  var startY=0,currentY=0,dragging=false;
+  function onStart(y){startY=y;currentY=y;dragging=true;sheet.style.transition='none';}
+  function onMove(y){if(!dragging)return;currentY=y;var d=Math.max(0,currentY-startY);sheet.style.transform='translateY('+d+'px)';sheet.style.opacity=Math.max(0.4,1-d/400);}
+  function onEnd(){if(!dragging)return;dragging=false;var d=currentY-startY;sheet.style.transition='transform .3s cubic-bezier(.16,1,.3,1),opacity .3s';if(d>80){cfCloseLegal(modalId);}else{sheet.style.transform='translateY(0)';sheet.style.opacity='1';}}
+  bar.addEventListener('touchstart',function(e){onStart(e.touches[0].clientY);},{passive:true});
+  bar.addEventListener('touchmove',function(e){onMove(e.touches[0].clientY);},{passive:true});
+  bar.addEventListener('touchend',onEnd);
+  /* Mouse drag support */
+  bar.addEventListener('mousedown',function(e){onStart(e.clientY);
+    function mm(ev){onMove(ev.clientY);}
+    function mu(){onEnd();document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);}
+    document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+  });
+}
+
+function cfOpenLegal(type){
+  sfxClick();
+  var id=type==='tos'?'cfTosModal':'cfPrivacyModal';
+  var modal=document.getElementById(id);
+  if(modal){modal.classList.add('show');document.body.style.overflow='hidden';
+    var sheet=modal.querySelector('.cf-legal-sheet');
+    if(sheet)sheet.scrollTop=0;
+    if(sheet&&typeof gsap!=='undefined')gsap.fromTo(sheet,{y:40,opacity:0},{y:0,opacity:1,duration:.4,ease:'power3.out'});
+  }
+}
+function cfCloseLegal(id){
+  sfxClick();
+  var modal=document.getElementById(id);
+  if(!modal)return;
+  var sheet=modal.querySelector('.cf-legal-sheet');
+  if(sheet&&typeof gsap!=='undefined'){
+    gsap.to(sheet,{y:60,opacity:0,duration:.28,ease:'power2.in',onComplete:function(){
+      modal.classList.remove('show');document.body.style.overflow='';
+      gsap.set(sheet,{y:0,opacity:1});
+    }});
+  }else{modal.classList.remove('show');document.body.style.overflow='';}
+}
+
+
+/* ── SHOP SYSTEM ── */
+function cfOpenShop(){sfxClick();cfUpdateShopUI();document.getElementById('cfShopModal').classList.add('show');document.body.style.overflow='hidden';var sheet=document.getElementById('cfShopSheet');if(sheet&&typeof gsap!=='undefined')gsap.fromTo(Array.from(sheet.children),{opacity:0,y:16},{opacity:1,y:0,stagger:.04,duration:.35,ease:'power3.out',delay:.1});}
+function cfCloseShop(){sfxClick();var m=document.getElementById('cfShopModal'),s=document.getElementById('cfShopSheet');if(s&&typeof gsap!=='undefined'){gsap.to(s,{y:60,opacity:0,duration:.28,ease:'power2.in',onComplete:function(){if(m)m.classList.remove('show');document.body.style.overflow='';gsap.set(s,{y:0,opacity:1});}});}else{if(m)m.classList.remove('show');document.body.style.overflow='';}}
+function cfUpdateShopUI(){var u=cfCurrentUser;var coins=(u&&u.coins)||0;var style=(u&&u.profileStyle)||0;var ce=document.getElementById('cfShopCoins');if(ce)ce.textContent=coins;var prices=[0,15,50,0];[1,2,3].forEach(function(s){var btn=document.getElementById('cfBuyStyle'+s);if(!btn)return;if(s===3){/* Style 3 is gift-only, never purchasable */if(style===3){btn.className='cf-style-buy-btn owned';btn.innerHTML='<i class="fa-solid fa-check-circle"></i> Equipped Gifted';btn.onclick=null;btn.style.cursor='default';}else{btn.className='cf-style-buy-btn locked';btn.innerHTML='<i class="fa-solid fa-lock"></i> Not Purchasable';btn.onclick=null;btn.style.cursor='default';}return;}if(style===s){btn.className='cf-style-buy-btn owned';btn.innerHTML='<i class="fa-solid fa-check-circle"></i> Equipped';btn.onclick=null;}else if(coins<prices[s]){btn.className='cf-style-buy-btn locked';btn.innerHTML='<i class="fa-solid fa-lock"></i> Not enough coins';btn.onclick=null;}else{btn.className='cf-style-buy-btn primary';btn.innerHTML='<i class="fa-solid fa-coins"></i> Purchase — '+prices[s].toLocaleString()+' coins';btn.onclick=function(){cfBuyStyle(s,prices[s]);};}});}
+function cfBuyStyle(sid,price){if(!cfCurrentUser)return;if(sid===3){cfShowToast('This style is gift-only!');return;}var coins=cfCurrentUser.coins||0;if(coins<price){cfShowToast('Not enough coins!');return;}if(!confirm('Purchase this style for '+price+' coins?'))return;sfxClick();(async function(){var db=cfDbCache||await fbRead();db.users=(db.users||[]).map(function(u){if(u.uid!==cfCurrentUser.uid)return u;return Object.assign({},u,{coins:(u.coins||0)-price,profileStyle:sid});});var ok=await fbWrite(db);if(ok){cfDbCache=db;cfCurrentUser=Object.assign({},cfCurrentUser,{coins:coins-price,profileStyle:sid});cfSaveLocal(cfCurrentUser);cfRefreshAllUserUI(cfCurrentUser);cfUpdateShopUI();cfShowToast('Style equipped!');}else cfShowToast('Failed to purchase.');})();}
+function cfGetStyleClass(uid){if(!cfDbCache||!cfDbCache.users)return '';var u=cfDbCache.users.find(function(x){return x.uid===uid;});if(!u||!u.profileStyle)return '';return ' cf-name-s'+u.profileStyle;}
+function cfIsMember(uid){if(!cfDbCache||!cfDbCache.users)return false;var u=cfDbCache.users.find(function(x){return x.uid===uid;});return u&&u.profileStyle===3;}
+/* Build styled username HTML. size: 'normal','small','large'. showBadge: show member mini badge. */
+function cfStyledName(name,uid,size,showBadge){
+  var cls=cfGetStyleClass(uid);
+  var sizeClass=size==='small'?'cf-sn-sm':size==='large'?'cf-sn-lg':'';
+  var badge='';
+  if(showBadge!==false&&cfIsMember(uid)){badge='<span class="cf-member-mini"><span class="cf-mm-check">V</span>Member</span>';}
+  return '<span class="cf-styled-name '+cls.trim()+' '+sizeClass+'">@'+escapeHtml(name)+'</span>'+badge;
+}
+function cfGetUserStyleClassFromObj(u){if(!u||!u.profileStyle)return '';return ' cf-name-s'+u.profileStyle;}
+
+
+/* ── ADMIN GIFT COINS ── */
+function cfOpenGift(){
+  sfxClick();
+  if(!cfCurrentUser||cfCurrentUser.username!==ADMIN_USER)return;
+  var ui=document.getElementById('cfGiftUsername');if(ui)ui.value='';
+  var ai=document.getElementById('cfGiftAmount');if(ai)ai.value='';
+  var mu=document.getElementById('cfGiftMemberUsername');if(mu)mu.value='';
+  var res=document.getElementById('cfGiftResult');if(res){res.className='cf-gift-result';res.style.display='none';}
+  document.getElementById('cfGiftModal').classList.add('show');document.body.style.overflow='hidden';
+}
+function cfCloseGift(){
+  sfxClick();
+  var m=document.getElementById('cfGiftModal');
+  if(m){m.classList.remove('show');document.body.style.overflow='';}
+}
+/* ── GIFT MEMBERSHIP (separate) ── */
+async function cfSendMembership(){
+  sfxClick();
+  if(!cfCurrentUser||cfCurrentUser.username!==ADMIN_USER){cfShowToast('Admin only');return;}
+  var username=((document.getElementById('cfGiftMemberUsername')||{}).value||'').trim().toLowerCase();
+  var res=document.getElementById('cfGiftResult');
+  var resTxt=document.getElementById('cfGiftResultText');
+  var btn=document.getElementById('cfGiftMemberBtn');
+  function showRes(ok,msg){if(res)res.className='cf-gift-result '+(ok?'ok':'err');if(resTxt)resTxt.textContent=msg;}
+  if(!username){showRes(false,'Enter a username');return;}
+  if(btn){btn.disabled=true;btn.innerHTML='Granting...';}
+  var db=cfDbCache||await fbRead();
+  var target=(db.users||[]).find(function(u){return u.username===username;});
+  if(!target){showRes(false,'User "'+username+'" not found');if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-crown"></i> Gift Membership';}return;}
+  if(target.profileStyle===3){showRes(false,'@'+username+' already has membership');if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-crown"></i> Gift Membership';}return;}
+  db.users=(db.users||[]).map(function(u){return u.uid===target.uid?Object.assign({},u,{profileStyle:3}):u;});
+  var ok=await fbWrite(db);
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-crown"></i> Gift Membership';}
+  if(ok){
+    cfDbCache=db;
+    showRes(true,'Membership granted to @'+username+' — Premium Crown + Member badge active!');
+    if(target.uid===cfCurrentUser.uid){cfCurrentUser=Object.assign({},cfCurrentUser,{profileStyle:3});cfSaveLocal(cfCurrentUser);cfRefreshAllUserUI(cfCurrentUser);}
+    cfShowToast('Membership gifted to @'+username+'!');
+    var ui=document.getElementById('cfGiftMemberUsername');if(ui)ui.value='';
+  }else{showRes(false,'Failed. Check connection.');}
+}
+/* ── GIFT COINS (separate) ── */
+async function cfSendGift(){
+  sfxClick();
+  if(!cfCurrentUser||cfCurrentUser.username!==ADMIN_USER){cfShowToast('Admin only');return;}
+  var username=((document.getElementById('cfGiftUsername')||{}).value||'').trim().toLowerCase();
+  var amount=parseInt((document.getElementById('cfGiftAmount')||{}).value||'0',10);
+  var res=document.getElementById('cfGiftResult');
+  var resTxt=document.getElementById('cfGiftResultText');
+  var btn=document.getElementById('cfGiftSendBtn');
+  function showRes(ok,msg){if(res)res.className='cf-gift-result '+(ok?'ok':'err');if(resTxt)resTxt.textContent=msg;}
+  if(!username){showRes(false,'Enter a username');return;}
+  if(!amount||amount<1){showRes(false,'Enter a valid coin amount');return;}
+  if(btn){btn.disabled=true;btn.innerHTML='Sending...';}
+  var db=cfDbCache||await fbRead();
+  var target=(db.users||[]).find(function(u){return u.username===username;});
+  if(!target){showRes(false,'User "'+username+'" not found');if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-coins"></i> Send Coins';}return;}
+  var newCoins=(target.coins||0)+amount;
+  db.users=(db.users||[]).map(function(u){return u.uid===target.uid?Object.assign({},u,{coins:newCoins}):u;});
+  var ok=await fbWrite(db);
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-coins"></i> Send Coins';}
+  if(ok){
+    cfDbCache=db;
+    showRes(true,'Sent '+amount+' coins to @'+username+' (total: '+newCoins+')');
+    if(target.uid===cfCurrentUser.uid){cfCurrentUser=Object.assign({},cfCurrentUser,{coins:newCoins});cfSaveLocal(cfCurrentUser);cfRefreshAllUserUI(cfCurrentUser);}
+    cfShowToast(amount+' coins sent to @'+username+'!');
+    var ui=document.getElementById('cfGiftUsername');if(ui)ui.value='';
+    var ai=document.getElementById('cfGiftAmount');if(ai)ai.value='';
+  }else{showRes(false,'Failed. Check connection.');}
+}
+
+/* ── COPY ABA ── */
+function copyAba(){
+  sfxClick();const raw=ABA_NUMBER.replace(/\s/g,'');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(raw).then(showCopiedToast).catch(function(){fallbackCopy(raw);});}
+  else fallbackCopy(raw);
+}
+function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showCopiedToast();}catch(e){}document.body.removeChild(ta);}
+function showCopiedToast(){cfShowToast('Number copied!');const i=document.querySelector('#copyAbaBtn i');if(i){i.className='fa-solid fa-check';setTimeout(function(){i.className='fa-regular fa-copy';},1800);}}
+function cfShowToast(msg){
+  const t=document.getElementById('cfToastMsg'),toast=document.getElementById('caffeToast');
+  if(t)t.textContent=msg;
+  if(toast){toast.classList.add('show');setTimeout(function(){toast.classList.remove('show');},2600);}
+}
+
+/* ── RESTORE SESSION ── */
+async function cfRestoreSession(){
+  const saved=cfLoadLocal();
+  if(saved&&saved.uid){
+    console.log('[cafe] restoring session:',saved.username);
+    cfCurrentUser=saved;
+    try{
+      const db=await fbRead();
+      if(db){cfDbCache=db;const fresh=(db.users||[]).find(function(u){return u.uid===saved.uid;});if(fresh){const sf=Object.assign({},fresh);delete sf.pwHash;cfCurrentUser=sf;cfSaveLocal(sf);}}
+    }catch(e){console.warn('[cafe] session refresh failed');}
+    cfInitCups();cfEnterDonate();
+  }else{cfGoStep('landing');cfUpdateLandingState();cfLoadWof();}
+}
+
+/* ── BIND EVENTS ── */
+function bindEvents(){
+  function on(id,ev,fn){const el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
+  on('createPageBtn','click',function(){cfGoStep('username');});
+  on('loginPageBtn','click',function(){cfGoStep('login');});
+  on('loginBackBtn','click',function(){cfGoStep('landing');});
+  on('createBackBtn','click',function(){cfGoStep('landing');});
+  on('cfLoginSubmitBtn','click',cfLoginSubmit);
+  on('cfUsernameBtn','click',cfSubmitUsername);
+  on('generateQrBtn','click',openCaffeQR);
+  on('closeQrBtn','click',closeCaffeQR);
+  on('copyAbaBtn','click',copyAba);
+  on('markPaidBtn','click',cfMarkPaid);
+  on('cfLogoutBtn','click',cfLogout);
+  on('cfEditProfileBtn','click',cfOpenEdit);
+  on('cfEditCancelBtn','click',cfCloseEdit);
+  on('cfPwSaveBtn','click',cfSavePw);
+  on('cfPwCancelBtn','click',cfClosePwModal);
+  on('cfPwModal','click',function(e){if(e.target===e.currentTarget)cfClosePwModal();});
+  on('cfDashboardBackBtn','click',cfGoHome);
+  on('cfSettingsBtn','click',cfOpenSettings);
+  on('shopBtn','click',cfOpenShop);
+  on('cfShopCloseBtn','click',cfCloseShop);
+  on('cfSetGiftBtn','click',function(){cfCloseSettings();setTimeout(cfOpenGift,300);});
+  on('cfGiftSendBtn','click',cfSendGift);
+  on('cfGiftMemberBtn','click',cfSendMembership);
+  on('cfGiftCloseBtn','click',cfCloseGift);
+  on('cfGiftModal','click',function(e){if(e.target===e.currentTarget)cfCloseGift();});
+  /* Enter key to send gift */
+  on('cfGiftAmount','keydown',function(e){if(e.key==='Enter')cfSendGift();});
+  on('cfGiftMemberUsername','keydown',function(e){if(e.key==='Enter')cfSendMembership();});
+  on('cfShopModal','click',function(e){if(e.target===e.currentTarget)cfCloseShop();});
+  on('cfTosCloseBtn','click',function(){cfCloseLegal('cfTosModal');});
+  on('cfPrivacyCloseBtn','click',function(){cfCloseLegal('cfPrivacyModal');});
+  on('cfTosModal','click',function(e){if(e.target===e.currentTarget)cfCloseLegal('cfTosModal');});
+  cfInitLegalSwipe('cfTosModal');cfInitLegalSwipe('cfPrivacyModal');
+  on('cfPrivacyModal','click',function(e){if(e.target===e.currentTarget)cfCloseLegal('cfPrivacyModal');});
+  on('cfSettingsCloseBtn','click',cfCloseSettings);
+  on('cfSetEditBtn','click',cfSettingsEditProfile);
+  on('cfSetPwBtn','click',cfSettingsChangePw);
+  on('cfSetLogoutBtn','click',cfSettingsLogout);
+  on('cfSettingsModal','click',function(e){if(e.target===e.currentTarget)cfCloseSettings();});
+  /* Click username to open settings */
+  on('cfUserBarName','click',function(e){e.stopPropagation();cfOpenSettings();});
+  on('cfLandingGoBtn','click',cfEnterDonate);
+  on('cfEditSaveBtn','click',cfSaveEdit);
+  on('closeProfileBtn','click',cfCloseProfileModalBtn);
+  on('caffeQrOverlay','click',handleOverlayClick);
+  on('qrBackHomeBtn','click',function(){closeCaffeQR();setTimeout(cfGoHome,300);});
+  on('cfProfileModal','click',cfCloseProfileModal);
+  on('cfEditModal','click',function(e){if(e.target===e.currentTarget)cfCloseEdit();});
+  on('chkTosRow','click',function(e){e.stopPropagation();cfToggleCheck('chkTos');});
+  on('chkPrivacyRow','click',function(e){e.stopPropagation();cfToggleCheck('chkPrivacy');});
+  on('cfAvatarPreview','click',function(){const f=document.getElementById('cfAvatarFile');if(f)f.click();});
+  on('cfEditAvatarUpload','click',function(){const f=document.getElementById('cfEditAvatarFile');if(f)f.click();});
+  on('cfUsernameInput','input',function(e){cfPreviewUsername(e.target.value);});
+  const af=document.getElementById('cfAvatarFile');if(af)af.addEventListener('change',function(e){cfHandleAvatar(e.target,'create');});
+  const ef=document.getElementById('cfEditAvatarFile');if(ef)ef.addEventListener('change',function(e){cfHandleAvatar(e.target,'edit');});
+  /* Enter key */
+  on('cfLoginUsernameInput','keydown',function(e){if(e.key==='Enter'){const p=document.getElementById('cfLoginPasswordInput');if(p)p.focus();}});
+  on('cfLoginPasswordInput','keydown',function(e){if(e.key==='Enter')cfLoginSubmit();});
+  on('cfUsernameInput','keydown',function(e){if(e.key==='Enter'){const p=document.getElementById('cfPasswordInput');if(p)p.focus();}});
+  on('cfPasswordInput','keydown',function(e){if(e.key==='Enter'){const p=document.getElementById('cfPasswordConfirmInput');if(p)p.focus();}});
+  on('cfPasswordConfirmInput','keydown',function(e){if(e.key==='Enter')cfSubmitUsername();});
+  const ca=document.getElementById('caffeCustomAmt');if(ca)ca.addEventListener('input',function(e){onCustomAmt(e.target);});
+  document.querySelectorAll('.caffe-amt').forEach(function(btn){btn.addEventListener('click',function(){const a=btn.getAttribute('data-amt');if(a)selectAmt(btn,a);});});
+}
+
+/* ── INIT ── */
+(function(){
+  bindEvents();
+  function startApp(){
+    setTimeout(function(){
+      try{cfInitCups();}catch(e){console.error('[cafe] cups:',e);}
+      cfRestoreSession().catch(function(e){console.error('[cafe] restore:',e);cfGoStep('landing');cfLoadWof();});
+    },100);
+  }
+  if(window._cfFirebaseReady){startApp();}
+  else{window.addEventListener('cfFirebaseReady',startApp,{once:true});}
+})();
+history.scrollRestoration='manual';
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8OBTTEaiGRfkbYqBKdjCoULaTRtCpEWA",
+    authDomain: "buymecafe-app.firebaseapp.com",
+    projectId: "buymecafe-app",
+    storageBucket: "buymecafe-app.firebasestorage.app",
+    messagingSenderId: "589954323513",
+    appId: "1:589954323513:web:2cb40bb1c1774add4c29e8",
+    measurementId: "G-YTL6Z6PKDL"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  getAnalytics(app);
+  window._cfFirestore = getFirestore(app);
+  window._cfFirebaseReady = true;
+  window.dispatchEvent(new Event('cfFirebaseReady'));
+</script>
+
+</body>
+</html>
